@@ -1,0 +1,70 @@
+<!--
+活记 · 职业名片
+Canvas 生成可分享的个人数据画像
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+
+  <!-- 加载 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loader-eq">
+      <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+      <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+      <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+      <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+      <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+      <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+      <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+    </view>
+    <text class="loading-text">生成名片中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && !portrait}}">
+    <text class="empty-title">还没有足够的数据</text>
+    <text class="empty-sub">记录几条工作再回来生成名片</text>
+  </view>
+
+  <!-- 名片预览 -->
+  <block wx:if="{{!loading && portrait}}">
+    <view class="card-preview-wrap">
+      <canvas
+        type="2d"
+        id="cardCanvas"
+        class="card-canvas"
+        style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+      ></canvas>
+    </view>
+
+    <!-- 操作区 -->
+    <view class="card-actions">
+      <view class="card-btn card-share" bindtap="onShareCard">
+        <text>分享给朋友</text>
+      </view>
+      <view class="card-btn card-save" bindtap="onSaveToAlbum">
+        <text>保存到相册</text>
+      </view>
+      <view class="card-btn card-refresh" bindtap="onRefresh">
+        <text>重新生成</text>
+      </view>
+    </view>
+
+    <!-- 自定义（可选） -->
+    <view class="card-toggles">
+      <text class="toggles-title">名片内容</text>
+      <view class="toggle-row">
+        <view class="toggle-item {{showTags ? 'active' : ''}}" bindtap="onToggleItem" data-key="showTags">
+          <text>标签云</text>
+        </view>
+        <view class="toggle-item {{showPeople ? 'active' : ''}}" bindtap="onToggleItem" data-key="showPeople">
+          <text>人物云</text>
+        </view>
+        <view class="toggle-item {{showMood ? 'active' : ''}}" bindtap="onToggleItem" data-key="showMood">
+          <text>心情</text>
+        </view>
+        <view class="toggle-item {{showMonths ? 'active' : ''}}" bindtap="onToggleItem" data-key="showMonths">
+          <text>月份</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

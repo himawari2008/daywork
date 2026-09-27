@@ -1,0 +1,168 @@
+<!--
+活记 · 借支管理
+汇总 + 明细双 Tab
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab {{tab === 'summary' ? 'active' : ''}}" bindtap="onSwitchTab" data-tab="summary">
+      <text>汇总</text>
+    </view>
+    <view class="tab {{tab === 'detail' ? 'active' : ''}}" bindtap="onSwitchTab" data-tab="detail">
+      <text>明细</text>
+    </view>
+  </view>
+
+  <!-- ========== 汇总视图 ========== -->
+  <block wx:if="{{tab === 'summary'}}">
+
+    <!-- 加载骨架 -->
+    <view class="skeleton-list" wx:if="{{loading}}">
+      <view class="sk-item" wx:for="{{[1,2,3]}}" wx:key="*this">
+        <view class="sk-line sk-wide"></view>
+        <view class="sk-line sk-narrow"></view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && summary.length === 0}}">
+      <view class="empty-icon css-icon-coin"></view>
+      <text class="empty-title">还没有借支记录</text>
+      <text class="empty-sub">记录借入借出，结算时一目了然</text>
+    </view>
+
+    <!-- 净余额卡片 -->
+    <view class="summary-card" wx:for="{{summary}}" wx:key="person" data-person="{{item.person}}" bindtap="onTapPerson">
+      <view class="sc-top">
+        <view class="sc-person">
+          <view class="sc-avatar">{{item.person[0]}}</view>
+          <text class="sc-name">{{item.person}}</text>
+        </view>
+        <view class="sc-net {{item.net > 0 ? 'positive' : item.net < 0 ? 'negative' : 'zero'}}">
+          <text class="sc-net-sign">{{item.net > 0 ? '+' : ''}}</text>
+          <text class="sc-net-amount">{{item.net}}</text>
+        </view>
+      </view>
+      <view class="sc-bottom">
+        <view class="sc-detail-row">
+          <text class="sc-detail-label">借出</text>
+          <text class="sc-detail-val">{{item.lendTotal}}</text>
+        </view>
+        <view class="sc-detail-row">
+          <text class="sc-detail-label">借入</text>
+          <text class="sc-detail-val">{{item.borrowTotal}}</text>
+        </view>
+        <view class="sc-detail-row">
+          <text class="sc-detail-label">笔数</text>
+          <text class="sc-detail-val">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- ========== 明细视图 ========== -->
+  <block wx:if="{{tab === 'detail'}}">
+
+    <!-- 加载 -->
+    <view class="skeleton-list" wx:if="{{loading}}">
+      <view class="sk-item" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="sk-line sk-wide"></view>
+        <view class="sk-line sk-narrow"></view>
+      </view>
+    </view>
+
+    <!-- 空 -->
+    <view class="empty-state" wx:if="{{!loading && detail.length === 0}}">
+      <text class="empty-title">暂无借支记录</text>
+    </view>
+
+    <!-- 明细列表 -->
+    <view
+      class="loan-item {{item.status === 'repaid' ? 'repaid' : ''}}"
+      wx:for="{{detail}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onTapLoan"
+      bindlongpress="onLongPressLoan"
+    >
+      <view class="li-left">
+        <view class="li-avatar">{{item.person[0]}}</view>
+        <view class="li-body">
+          <view class="li-top-row">
+            <text class="li-person">{{item.person}}</text>
+            <text class="li-dir {{item.direction === 'lend' ? 'lend' : 'borrow'}}">
+              {{item.direction === 'lend' ? '借出' : '借入'}}
+            </text>
+          </view>
+          <text class="li-reason" wx:if="{{item.reason}}">{{item.reason}}</text>
+          <text class="li-time">{{item._timeLabel}}</text>
+        </view>
+      </view>
+      <view class="li-right">
+        <text class="li-amount {{item.direction === 'lend' ? 'lend' : 'borrow'}}">
+          {{item.direction === 'lend' ? '-' : '+'}}{{item.amount}}
+        </text>
+        <view class="li-status {{item.status}}">
+          <text>{{item.status === 'pending' ? '未还' : '已还'}}</text>
+        </view>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- 浮动新增按钮 -->
+  <view class="fab" bindtap="onShowAdd">
+    <view class="fab-icon"></view>
+  </view>
+
+  <!-- ========== 新增/编辑弹窗 ========== -->
+  <view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="onHideModal"></view>
+  <view class="modal-sheet {{showModal ? 'show' : ''}}">
+    <view class="modal-header">
+      <text class="modal-title">{{editingId ? '编辑借支' : '新增借支'}}</text>
+      <view class="modal-close" bindtap="onHideModal">✕</view>
+    </view>
+
+    <!-- 人物 -->
+    <view class="form-field">
+      <text class="form-label">对象</text>
+      <input class="form-input" value="{{formPerson}}" placeholder="人名，如 老张" bindinput="onFormInput" data-field="person" maxlength="10"/>
+    </view>
+
+    <!-- 金额 -->
+    <view class="form-field">
+      <text class="form-label">金额（元）</text>
+      <input class="form-input" type="digit" value="{{formAmount}}" placeholder="正数" bindinput="onFormInput" data-field="amount"/>
+    </view>
+
+    <!-- 方向 -->
+    <view class="form-field">
+      <text class="form-label">方向</text>
+      <view class="form-toggle">
+        <view class="form-tog {{formDirection === 'lend' ? 'active lend' : ''}}" bindtap="onToggleDir" data-dir="lend">
+          <text>借出（我借给别人）</text>
+        </view>
+        <view class="form-tog {{formDirection === 'borrow' ? 'active borrow' : ''}}" bindtap="onToggleDir" data-dir="borrow">
+          <text>借入（别人借给我）</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 原因 -->
+    <view class="form-field">
+      <text class="form-label">原因</text>
+      <input class="form-input" value="{{formReason}}" placeholder="如 买材料、生活费" bindinput="onFormInput" data-field="reason" maxlength="30"/>
+    </view>
+
+    <view class="modal-actions">
+      <view class="modal-btn modal-cancel" bindtap="onHideModal">
+        <text>取消</text>
+      </view>
+      <view class="modal-btn modal-save" bindtap="onSaveLoan">
+        <text>{{editingId ? '保存' : '记录'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

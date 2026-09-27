@@ -1,0 +1,926 @@
+<!--
+活记 v4 · 首页 — 时间河流 + 智能分组
+侧抽屉收纳 · 统一输入区 · 筛选Tab · 置顶 · 动效升级
+参考：钉钉 ONE 模式 + 飞书 + Apple Notes
+零 emoji · CSS 纯图标
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+
+  <!-- ============================================
+     侧抽屉蒙层
+     ============================================ -->
+  <view
+    class="drawer-overlay {{drawerOpen ? 'show' : ''}}"
+    bindtap="onCloseDrawer"
+    catchtouchmove="noop"
+  ></view>
+
+  <!-- ============================================
+     侧抽屉面板
+     ============================================ -->
+  <view class="drawer-panel {{drawerOpen ? 'show' : ''}}" catchtouchmove="noop">
+    <!-- 用户信息 -->
+    <view class="drawer-user">
+      <view class="drawer-avatar">
+        <view class="css-icon-user drawer-user-icon"></view>
+      </view>
+      <text class="drawer-nick">活记用户</text>
+      <text class="drawer-days">已记录 <text class="drawer-days-num">{{streak}}</text> 天</text>
+    </view>
+
+    <!-- 分组列表 -->
+    <view class="drawer-section">
+      <text class="drawer-label">分组</text>
+      <scroll-view class="drawer-groups" scroll-y>
+        <!-- 固定项 -->
+        <view class="drawer-item {{activeGroupId === 'all' ? 'active' : ''}}" data-group="all" bindtap="onDrawerFilter">
+          <view class="drawer-item-icon drawer-icon-all"></view>
+          <text class="drawer-item-name">全部</text>
+          <text class="drawer-item-count">{{totalCount}}</text>
+        </view>
+        <view class="drawer-item {{activeGroupId === 'pending' ? 'active' : ''}}" data-group="pending" bindtap="onDrawerFilter">
+          <view class="drawer-item-icon drawer-icon-pending"></view>
+          <text class="drawer-item-name">待办</text>
+          <text class="drawer-item-count pending-count">{{pendingCount}}</text>
+        </view>
+        <!-- 日期导航 — 可视化迷你日历 -->
+        <view class="drawer-date-section">
+          <!-- 快捷跳转 -->
+          <view class="drawer-date-chips">
+            <view class="date-chip {{filterDateLabel === '今天' ? 'active' : ''}}" data-type="today" bindtap="onQuickDate">
+              <text>今天</text>
+            </view>
+            <view class="date-chip {{filterDateLabel === '昨天' ? 'active' : ''}}" data-type="yesterday" bindtap="onQuickDate">
+              <text>昨天</text>
+            </view>
+          </view>
+
+          <!-- 月导航 -->
+          <view class="cal-nav">
+            <view class="cal-nav-btn" bindtap="onPrevMonth"><text>◂</text></view>
+            <picker mode="date" fields="month" value="{{_calPickerDate}}" bindchange="onMonthPickerChange">
+              <text class="cal-nav-label">{{calendarYear}}年{{calendarMonth}}月</text>
+            </picker>
+            <view class="cal-nav-btn" bindtap="onNextMonth"><text>▸</text></view>
+            <text class="cal-summary">{{calendarSummary}}</text>
+          </view>
+
+          <!-- 星期头 -->
+          <view class="cal-weekdays">
+            <text class="cal-wd" wx:for="{{['一','二','三','四','五','六','日']}}" wx:key="*this">{{item}}</text>
+          </view>
+
+          <!-- 日期网格 -->
+          <view class="cal-grid">
+            <view class="cal-week" wx:for="{{calendarGrid}}" wx:key="index">
+              <view
+                class="cal-day {{day.isCurrentMonth ? '' : 'other-month'}} {{day.isToday ? 'today' : ''}} {{day.date === filterDate ? 'selected' : ''}} {{day.count > 0 ? 'has-records' : ''}}"
+                wx:for="{{item}}"
+                wx:key="day"
+                wx:for-item="day"
+                data-date="{{day.date}}"
+                data-count="{{day.count}}"
+                bindtap="onTapCalendarDay"
+              >
+                <text class="cal-day-num">{{day.day}}</text>
+                <view class="cal-day-dot {{day.count > 0 ? 'show' : ''}}" wx:if="{{day.isCurrentMonth}}"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 分隔 -->
+        <view class="drawer-divider"></view>
+
+        <!-- AI 分组（树形：一级 + 子分组缩进） -->
+        <block wx:for="{{groups}}" wx:key="id" wx:for-item="group">
+          <!-- 一级分组 -->
+          <view
+            class="drawer-item {{activeGroupId === group.id ? 'active' : ''}}"
+            data-group="{{group.id}}"
+            bindtap="onDrawerFilter"
+            bindlongpress="onGroupLongPress"
+          >
+            <view class="drawer-item-icon group-dot" style="background: {{group.color || '#4A5C7C'}}"></view>
+            <text class="drawer-item-name">{{group.name}}</text>
+            <text class="drawer-item-count">{{group.recordCount}}</text>
+          </view>
+          <!-- 子分组（缩进显示） -->
+          <view
+            class="drawer-item drawer-child {{activeGroupId === child.id ? 'active' : ''}}"
+            wx:for="{{group.children}}"
+            wx:key="id"
+            wx:for-item="child"
+            data-group="{{child.id}}"
+            bindtap="onDrawerFilter"
+            bindlongpress="onGroupLongPress"
+          >
+            <view class="drawer-item-icon group-dot" style="background: {{child.color || '#4A5C7C'}}; width: 10rpx; height: 10rpx;"></view>
+            <text class="drawer-item-name child-name">{{child.name}}</text>
+            <text class="drawer-item-count">{{child.recordCount}}</text>
+          </view>
+        </block>
+
+        <!-- 新建分组 -->
+        <view class="drawer-item drawer-new-group" bindtap="onNewGroup">
+          <view class="css-icon-plus drawer-plus-icon" style="color: var(--ink-faint)"></view>
+          <text class="drawer-item-name">新建分组</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 工具区 -->
+    <view class="drawer-section drawer-tools">
+      <text class="drawer-label">工具</text>
+      <view class="drawer-item" bindtap="onGoImport">
+        <view class="drawer-item-icon drawer-icon-import"></view>
+        <text class="drawer-item-name">批量导入</text>
+      </view>
+      <view class="drawer-item" bindtap="onGoMine">
+        <view class="drawer-item-icon drawer-icon-stats"></view>
+        <text class="drawer-item-name">统计画像</text>
+      </view>
+      <view class="drawer-item" bindtap="onExport">
+        <view class="drawer-item-icon drawer-icon-export"></view>
+        <text class="drawer-item-name">导出数据</text>
+      </view>
+      <view class="drawer-item" bindtap="onSmartOrganize">
+        <view class="drawer-item-icon drawer-icon-organize"></view>
+        <text class="drawer-item-name">智能整理</text>
+        <text class="drawer-item-count organize-badge" wx:if="{{ungroupedCount > 0 && !reclassifying}}">{{ungroupedCount}}</text>
+        <text class="drawer-item-count organize-loading" wx:if="{{reclassifying}}">整理中</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============================================
+     主内容区
+     ============================================ -->
+  <view class="main-area">
+
+    <!-- ============ 超期提醒顶部通知条 ============ -->
+    <view class="notify-toast {{reminderData.overdueCount > 0 && !notifyDismissed ? 'show' : ''}}" bindtap="onShowReminders">
+      <view class="nt-icon"></view>
+      <view class="nt-body">
+        <text class="nt-title">{{reminderData.overdueCount}} 条待办已超期</text>
+        <text class="nt-desc">点击查看并处理</text>
+      </view>
+      <view class="nt-close" catchtap="onDismissNotify">✕</view>
+    </view>
+
+    <!-- ============ 头部 — 轻量问候 ============ -->
+    <view class="header">
+      <!-- 选择模式：胶囊取消按钮 -->
+      <view class="select-cancel-capsule" wx:if="{{selectMode}}" bindtap="onExitSelectMode">
+        <text>取消</text>
+      </view>
+      <!-- 普通模式：抽屉按钮 + 工具栏 -->
+      <view class="header-left" wx:if="{{!selectMode}}" bindtap="onToggleDrawer">
+        <view class="css-icon-drawer"></view>
+      </view>
+      <!-- 搜索按钮 — 独立入口 -->
+      <view class="header-search" wx:if="{{!selectMode}}" bindtap="onGoSearch">
+        <view class="css-icon-search"></view>
+      </view>
+      <view class="header-center" wx:if="{{!loading}}">
+        <text class="header-greet" wx:if="{{!selectMode}}">{{greeting}}</text>
+        <text class="header-greet" wx:if="{{selectMode}}">已选 {{selectedCount}} 项</text>
+      </view>
+      <view class="header-right" wx:if="{{!selectMode}}">
+        <text class="hs-num">{{filterDate ? records.length : todayCount}}</text>
+        <text class="hs-unit">{{filterDate ? (filterDateLabel || filterDate) : '今日'}}</text>
+        <text class="hs-num" style="margin-left: 16rpx" wx:if="{{!filterDate}}">{{streak}}</text>
+        <text class="hs-unit" wx:if="{{!filterDate}}">连续</text>
+        <view class="hs-clear-date" wx:if="{{filterDate}}" catchtap="onClearDate">
+          <text>清除</text>
+        </view>
+      </view>
+      <!-- 选择模式下：全选胶囊 -->
+      <view class="select-all-capsule" wx:if="{{selectMode}}" bindtap="onToggleSelectAll">
+        <text>{{selectedCount === records.length ? '取消全选' : '全选'}}</text>
+      </view>
+    </view>
+
+    <!-- ============ 待办提醒横条（Phase 1 新增）============ -->
+    <view class="reminder-bar {{reminderShake ? 'shake' : ''}} {{reminderPulse ? 'pulse' : ''}} {{reminderData.overdueCount > 0 ? 'has-overdue' : reminderData.upcomingCount > 0 ? 'has-upcoming' : ''}}" wx:if="{{!selectMode && reminderData.total > 0}}" bindtap="onShowReminders">
+      <view class="reminder-left">
+        <view class="ri-bell-icon"></view>
+        <text class="reminder-title">待办提醒</text>
+      </view>
+      <view class="reminder-right">
+        <text class="reminder-count ri-overdue" wx:if="{{reminderData.overdueCount > 0}}">{{reminderData.overdueCount}} 条超期</text>
+        <text class="reminder-count ri-upcoming" wx:if="{{reminderData.upcomingCount > 0 && reminderData.overdueCount === 0}}">{{reminderData.upcomingCount}} 条即将到期</text>
+        <text class="reminder-arrow">▸</text>
+      </view>
+    </view>
+
+    <!-- ============ 筛选 Tab 栏 ============ -->
+    <scroll-view class="filter-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-tab {{activeGroupId === 'all' ? 'active' : ''}}" data-group="all" bindtap="onFilterTab">
+        <text>全部</text>
+      </view>
+      <view class="filter-tab {{activeGroupId === 'pending' ? 'active' : ''}}" data-group="pending" bindtap="onFilterTab">
+        <text>待办</text>
+      </view>
+      <view class="filter-tab {{activeGroupId === 'today' || filterDateLabel === '今天' ? 'active' : ''}}" data-group="today" bindtap="onFilterTab">
+        <text>今天</text>
+      </view>
+      <!-- 自定义日期筛选标签 -->
+      <view class="filter-tab filter-tab-date active" wx:if="{{filterDate && filterDateLabel !== '今天'}}" bindtap="onClearDate">
+        <view class="css-icon-calendar filter-cal-icon"></view>
+        <text>{{filterDateLabel}}</text>
+        <view class="filter-date-clear">✕</view>
+      </view>
+      <!-- 分组 Tab -->
+      <view
+        class="filter-tab {{activeGroupId === item.id ? 'active' : ''}}"
+        wx:for="{{topGroups}}"
+        wx:key="id"
+        data-group="{{item.id}}"
+        bindtap="onFilterTab"
+      >
+        <view class="filter-tab-dot" style="background: {{item.color || '#4A5C7C'}}"></view>
+        <text>{{item.name}}</text>
+      </view>
+      <!-- 更多 -->
+      <view class="filter-tab filter-tab-more" bindtap="onToggleDrawer">
+        <text>＋</text>
+      </view>
+    </scroll-view>
+
+    <!-- ============ 排序/视图工具栏 ============ -->
+    <view class="toolbar-row" wx:if="{{!selectMode}}">
+      <view class="toolbar-sort" bindtap="onToggleSort">
+        <text class="toolbar-sort-icon">{{sortOrder === 'desc' ? '↓' : '↑'}}</text>
+        <text class="toolbar-sort-label">{{sortBy === 'time' ? '按时间' : '按修改'}}</text>
+      </view>
+      <view class="toolbar-spacer"></view>
+      <view class="toolbar-view" bindtap="onToggleViewMode">
+        <text class="toolbar-view-icon">{{viewMode === 'list' ? '⊞' : '☰'}}</text>
+        <text class="toolbar-view-label">{{viewMode === 'list' ? '宫格' : '列表'}}</text>
+      </view>
+    </view>
+
+    <!-- ============ 离线同步提示 ============ -->
+    <view class="offline-badge" wx:if="{{offlinePendingCount > 0}}" bindtap="onSyncOffline">
+      <view class="ob-dot"></view>
+      <text class="ob-text">{{offlinePendingCount}} 条录音待同步 · 点击重试</text>
+      <view class="ob-arrow">↻</view>
+    </view>
+
+    <!-- ============ 往日回顾卡片（对标 Day One "On This Day"） ============ -->
+    <view class="memory-card" wx:if="{{memoryRecord}}" bindtap="onMemoryTap">
+      <view class="memory-card-inner">
+        <view class="memory-badge">{{memoryRecord.typeLabel}}</view>
+        <text class="memory-date">{{memoryRecord.date}}</text>
+        <text class="memory-summary">{{memoryRecord.summary}}</text>
+        <view class="memory-actions">
+          <view class="memory-action-btn" catchtap="onMemoryRefresh">
+            <text>换一条</text>
+          </view>
+          <view class="memory-action-btn" catchtap="onMemoryDismiss">
+            <text>关闭</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 记录流 — 河流隐喻 ============ -->
+    <scroll-view
+      class="record-river"
+      scroll-y
+      enhanced
+      enable-flex
+      show-scrollbar="{{false}}"
+      bindscrolltolower="onLoadMore"
+      refresher-enabled
+      refresher-triggered="{{refreshing}}"
+      bindrefresherrefresh="onRefresh"
+    >
+      <!-- 今日分割线 -->
+      <view class="river-divider" wx:if="{{records.length > 0}}">
+        <view class="river-line"></view>
+        <text class="river-label">{{filterDate ? (filterDateLabel || filterDate) : (activeGroupId === 'today' ? '今日' : activeGroupId === 'pending' ? '待办事项' : activeGroupId === 'all' ? '全部记录' : '')}}</text>
+        <view class="river-line"></view>
+      </view>
+
+      <!-- 记录卡片 — 石子入河 -->
+      <view class="records-wrap {{viewMode === 'grid' ? 'grid-mode' : ''}}">
+      <block wx:for="{{records}}" wx:key="id">
+        <view
+          class="stone-card {{item._animClass}} {{selectMode ? 'selectable' : ''}} {{selectedIds[item.id] ? 'selected' : ''}} mood-{{item._moodCardClass}} grid-{{item._gridSize}}"
+          style="animation-delay: {{index * 0.05}}s"
+          data-id="{{item.id}}"
+          bindtap="onTapRecord"
+          bindlongpress="onLongPressRecord"
+          bindtouchstart="onTouchStart"
+          bindtouchmove="onTouchMove"
+          bindtouchend="onTouchEnd"
+          data-index="{{index}}"
+        >
+          <!-- 选择框（选择模式下显示） -->
+          <view class="stone-check" wx:if="{{selectMode}}">
+            <view class="check-dot {{selectedIds[item.id] ? 'checked' : ''}}">
+              <view class="css-icon-check check-inner" wx:if="{{selectedIds[item.id]}}"></view>
+            </view>
+          </view>
+
+          <!-- 左侧：时间 + 心情点 -->
+          <view class="stone-left">
+            <!-- 置顶标记 -->
+            <view class="stone-pin" wx:if="{{item._isPinned}}">
+              <view class="pin-icon"></view>
+            </view>
+            <text class="stone-time">{{item._timeLabel}}</text>
+            <view class="stone-mood-dot mood-tone-{{item._moodToneClass}}" wx:if="{{item._moodLabel}}"></view>
+          </view>
+
+          <!-- 右侧：内容 -->
+          <view class="stone-body">
+            <view class="stone-summary-row">
+              <text class="stone-summary">{{item.summary || item.content}}</text>
+              <!-- 语音回放图标 -->
+              <view class="stone-voice-icon" wx:if="{{item._hasVoice}}" catchtap="onPlayVoice" data-id="{{item.id}}">
+                <view class="css-icon-voice-sm"></view>
+              </view>
+            </view>
+
+            <!-- 宫格正文预览（便签风格：标题下显示正文片段） -->
+            <text class="stone-grid-body" wx:if="{{item._gridBody}}">{{item._gridBody}}</text>
+
+            <!-- 宫格底部：时间 + 心情点 -->
+            <view class="stone-grid-footer">
+              <text class="stone-grid-time">{{item._timeLabel}}</text>
+              <view class="stone-mood-dot mood-tone-{{item._moodToneClass}}" wx:if="{{item._moodLabel}}"></view>
+            </view>
+
+            <!-- 提醒铃铛图标（Phase 1 新增） -->
+            <view class="stone-reminder" wx:if="{{item._hasReminder}}">
+              <view class="stone-reminder-bell {{item._remindUrgent ? 'urgent' : ''}}"></view>
+              <text class="stone-reminder-label">{{item._remindLabel}}</text>
+            </view>
+
+            <!-- 分组徽标 -->
+            <view class="stone-group-badge" wx:if="{{item._groupName && item._groupColor}}" style="background: {{item._groupColor}}18; border-color: {{item._groupColor}}40">
+              <view class="sg-dot" style="background: {{item._groupColor}}"></view>
+              <text class="sg-name" style="color: {{item._groupColor}}">{{item._groupName}}</text>
+            </view>
+
+            <!-- 图片缩略图（有附件时） -->
+            <view class="stone-images" wx:if="{{item.attachments && item.attachments.length > 0}}">
+              <image
+                class="stone-thumb"
+                wx:for="{{item.attachments}}"
+                wx:key="*this"
+                wx:for-item="img"
+                src="{{img}}"
+                mode="aspectFill"
+                lazy-load
+              ></image>
+            </view>
+
+            <!-- 标签行 -->
+            <view class="stone-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+              <text class="stone-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="t">{{t}}</text>
+            </view>
+
+            <!-- 状态 + 人物 -->
+            <view class="stone-meta" wx:if="{{item.status || (item.people && item.people.length > 0)}}">
+              <text class="stone-status status-{{item._statusClass}}" wx:if="{{item.status}}">{{item.status}}</text>
+              <text class="stone-people" wx:if="{{item.people && item.people.length > 0}}">{{item.people.join('、')}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="load-more" wx:if="{{hasMore}}">
+        <text class="load-more-text" bindtap="onLoadMore">{{loadingMore ? '石子浮现中...' : '更早的记录'}}</text>
+      </view>
+
+      <view class="river-bottom-spacer"></view>
+    </scroll-view>
+
+    <!-- ============ 空状态 ============ -->
+    <view class="empty-state {{timeClass}}" wx:if="{{!loading && records.length === 0}}">
+      <image class="empty-illu-img" src="/images/empty.png" mode="widthFix"/>
+      <text class="empty-title">{{filterDate ? (filterDateLabel + '没有记录') : '今天发生了什么？'}}</text>
+      <text class="empty-desc">{{emptyHint}}</text>
+    </view>
+
+    <!-- 首屏加载 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loader-eq">
+        <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+        <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+        <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+        <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+        <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+        <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+        <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+      </view>
+      <text class="loading-text">活记正在聆听…</text>
+    </view>
+
+    <!-- ============================================
+       批量操作栏（选择模式下显示）
+       ============================================ -->
+    <view class="batch-bar {{selectMode ? 'show' : ''}}">
+      <view class="batch-bar-inner">
+        <view class="batch-select-all" bindtap="onToggleSelectAll">
+          <view class="check-dot {{selectedCount === records.length && records.length > 0 ? 'checked' : ''}}">
+            <view class="css-icon-check check-inner" wx:if="{{selectedCount === records.length && records.length > 0}}"></view>
+          </view>
+          <text>全选</text>
+        </view>
+        <view class="batch-actions">
+          <view class="batch-action-btn {{selectedCount === 0 ? 'disabled' : ''}}" bindtap="onBatchMoveToGroup">
+            <text>移动到分组</text>
+          </view>
+          <view class="batch-action-btn {{selectedCount === 0 ? 'disabled' : ''}}" bindtap="onBatchMarkDone">
+            <text>标记完成</text>
+          </view>
+        </view>
+        <view class="batch-delete-btn {{selectedCount === 0 ? 'disabled' : ''}}" bindtap="onBatchDelete">
+          <view class="css-icon-delete-batch"></view>
+          <text>删除{{selectedCount > 0 ? '(' + selectedCount + ')' : ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============================================
+       底部区：图片预览条 + 输入栏
+       ============================================ -->
+    <view class="bottom-area" wx:if="{{!selectMode}}">
+
+      <!-- 媒体预览条（图片+视频）：仅在有选中内容时渲染，不再硬编码 show -->
+      <view class="image-preview-strip" wx:if="{{previewImages.length > 0 || previewVideos.length > 0}}">
+        <scroll-view class="preview-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <!-- 图片 -->
+          <view class="preview-item" wx:for="{{previewImages}}" wx:key="index">
+            <image class="preview-thumb" src="{{item}}" mode="aspectFill" binderror="onPreviewImageError" data-index="{{index}}" data-type="image"></image>
+            <view class="preview-remove" data-index="{{index}}" data-type="image" catchtap="onRemovePreviewMedia">
+              <view class="css-icon-close preview-close-icon"></view>
+            </view>
+          </view>
+          <!-- 视频 -->
+          <view class="preview-item" wx:for="{{previewVideos}}" wx:key="index" wx:for-item="vid">
+            <image class="preview-thumb" src="{{vid.thumb}}" mode="aspectFill" binderror="onPreviewImageError" data-index="{{index}}" data-type="video"></image>
+            <view class="preview-video-badge"></view>
+            <view class="preview-remove" data-index="{{index}}" data-type="video" catchtap="onRemovePreviewMedia">
+              <view class="css-icon-close preview-close-icon"></view>
+            </view>
+          </view>
+        </scroll-view>
+        <view class="preview-clear-all" wx:if="{{previewImages.length > 0 || previewVideos.length > 0}}" bindtap="onClearPreviewImages">
+          <text>清除全部</text>
+        </view>
+      </view>
+
+      <!-- 快捷词 chips — 输入框正上方常驻（同「问」页交互）：点按填入，长按编辑/删除，+号自定义 -->
+      <scroll-view class="tpl-bar" scroll-x enhanced show-scrollbar="{{false}}" wx:if="{{templates.length > 0}}">
+        <view class="tpl-bar-inner">
+          <text
+            class="tpl-chip"
+            wx:for="{{templates}}"
+            wx:key="*this"
+            data-text="{{item}}"
+            data-index="{{index}}"
+            bindtap="onTapTemplate"
+            bindlongpress="onTemplateLongPress"
+          >{{item}}</text>
+          <view class="tpl-chip tpl-chip-add" bindtap="onAddTemplate">
+            <view class="tpl-add-icon"></view>
+            <text>自定义</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 输入栏 -->
+      <view class="bottom-bar">
+        <!-- + 按钮 -->
+        <view class="bar-plus {{showActions ? 'active' : ''}}" bindtap="onToggleActions">
+          <view class="css-icon-plus bar-plus-icon"></view>
+        </view>
+
+        <!-- 连记开关（原 templates-row 迁移至此） -->
+        <view class="bar-continuous {{continuousMode ? 'active' : ''}}" bindtap="onToggleContinuous">
+          <text>连</text>
+        </view>
+
+        <!-- 输入框 -->
+        <view class="input-box {{inputText ? 'has-text' : ''}}">
+          <textarea
+            class="bar-input"
+            value="{{inputText}}"
+            placeholder="{{recording ? '正在倾听...' : '说一句或长按录音...'}}"
+            placeholder-style="color:#B5B0A8"
+            auto-height
+            maxlength="500"
+            bindinput="onInputChange"
+            adjust-position="{{true}}"
+            disabled="{{recording}}"
+            confirm-type="send"
+            bindconfirm="onSendText"
+          />
+        </view>
+
+        <!-- 语音按钮 — 按住说话 + 上滑取消 -->
+        <view class="bar-mic {{recording ? 'is-recording' : ''}} {{cancelIntent ? 'cancel-intent' : ''}}"
+          catchtouchstart="onMicTouchStart"
+          catchtouchmove="onMicTouchMove"
+          catchtouchend="onMicTouchEnd"
+        >
+
+        <!-- 上滑取消浮层提示 -->
+        <view class="cancel-float {{cancelIntent ? 'show' : ''}}">
+          <view class="cancel-float-ring">
+            <text>×</text>
+          </view>
+          <text class="cancel-float-text">松手取消</text>
+        </view>
+          <view class="mic-rings" wx:if="{{recording}}">
+            <view class="mic-ring ring1"></view>
+            <view class="mic-ring ring2"></view>
+            <view class="mic-ring ring3"></view>
+          </view>
+          <view class="wave-bars" wx:if="{{recording}}">
+            <view class="wbar wbar1 active"></view>
+            <view class="wbar wbar2 active"></view>
+            <view class="wbar wbar3 active"></view>
+            <view class="wbar wbar4 active"></view>
+            <view class="wbar wbar5 active"></view>
+          </view>
+          <view class="css-icon-mic" wx:if="{{!recording && !inputText}}"></view>
+          <view class="mic-stop-shape" wx:if="{{recording}}"></view>
+        </view>
+
+        <!-- 语音指令提示（录音中显示） -->
+        <view class="voice-cmd-hint {{recording ? 'show' : ''}}">
+          <text class="vch-chip">说"下一个"换条</text>
+          <text class="vch-chip">说"完成了"标完成</text>
+        </view>
+
+        <!-- 发送按钮 -->
+        <view class="bar-send {{sending ? 'sending' : ''}}" wx:if="{{inputText || previewImages.length > 0 || previewVideos.length > 0}}" bindtap="onSendText">
+          <view class="css-icon-send" wx:if="{{!sending}}"></view>
+          <view class="send-dots" wx:if="{{sending}}">
+            <view class="sdot"></view>
+            <view class="sdot"></view>
+            <view class="sdot"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+    <!-- ============ 庆祝粒子层 ============ -->
+  <view class="celebrate-burst" wx:if="{{showCelebrate}}">
+    <view
+      class="ce-particle {{item.color}}"
+      wx:for="{{celebrateParticles}}"
+      wx:key="index"
+      style="left: {{item.x}}; top: {{item.y}}; animation-delay: {{item.delay}}"
+    ></view>
+  </view>
+
+  <!-- ============================================
+     确认卡片（记录已存库后的即时复核，替代强制跳转详情页）
+     ============================================ -->
+  <view class="confirm-overlay {{showConfirmCard ? 'show' : ''}}" bindtap="onConfirmOverlayTap" catchtouchmove="noop"></view>
+  <view class="confirm-sheet {{showConfirmCard ? 'show' : ''}}" catchtouchmove="noop">
+    <block wx:if="{{confirmRecord}}">
+      <!-- 头部：已记录 + AI生成合规角标 + 关闭 -->
+      <view class="confirm-header">
+        <view class="confirm-head-left">
+          <text class="confirm-title">已记录</text>
+          <text class="confirm-ai-badge">AI 生成</text>
+        </view>
+        <view class="confirm-close" bindtap="onConfirmDismiss">
+          <view class="css-icon-close"></view>
+        </view>
+      </view>
+
+      <!-- 摘要（AI 理解的核心） -->
+      <view class="confirm-summary">{{confirmRecord.summary || confirmRecord.content}}</view>
+
+      <!-- 原文（只读，两行截断） -->
+      <view class="confirm-original" wx:if="{{confirmRecord.content && confirmRecord.content !== confirmRecord.summary}}">
+        <text class="confirm-original-text">{{confirmRecord.content}}</text>
+      </view>
+
+      <!-- 标签：可点 × 移除，让 AI 标签可见可撤 -->
+      <view class="confirm-section" wx:if="{{cardSavedTags.length > 0}}">
+        <text class="confirm-section-label">标签</text>
+        <view class="confirm-tag-row">
+          <view class="confirm-tag" wx:for="{{cardSavedTags}}" wx:key="*this">
+            <text class="confirm-tag-name">{{item}}</text>
+            <view class="confirm-tag-del" catchtap="onConfirmRemoveTag" data-tag="{{item}}">×</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分组：可切换，让 AI 分类可见可改 -->
+      <view class="confirm-section">
+        <view class="confirm-section-label-row">
+          <text class="confirm-section-label">分组</text>
+          <view class="confirm-ai-badge-sm {{cardSuggestedGroupName ? 'show' : ''}}" wx:if="{{cardSuggestedGroupName}}">
+            <text>AI 已归入「{{cardSuggestedGroupName}}」</text>
+          </view>
+        </view>
+        <scroll-view class="confirm-group-row" scroll-x>
+          <view class="confirm-group-chip {{!cardEditGroupId ? 'active' : ''}}" data-group-id="" catchtap="onConfirmSetGroup">
+            <text>不分组</text>
+          </view>
+          <view
+            class="confirm-group-chip {{cardEditGroupId === item.id ? 'active' : ''}}"
+            wx:for="{{flatGroups}}"
+            wx:key="id"
+            data-group-id="{{item.id}}"
+            catchtap="onConfirmSetGroup"
+          >
+            <view class="cgc-dot" style="background: {{item.color || '#4A5C7C'}}"></view>
+            <text>{{item.name}}</text>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 状态四选 -->
+      <view class="confirm-section">
+        <text class="confirm-section-label">状态</text>
+        <view class="confirm-status-row">
+          <view class="confirm-status-opt {{cardEditStatus === '待办' ? 'active' : ''}}" data-status="待办" catchtap="onConfirmSetStatus">待办</view>
+          <view class="confirm-status-opt {{cardEditStatus === '已完成' ? 'active' : ''}}" data-status="已完成" catchtap="onConfirmSetStatus">已完成</view>
+          <view class="confirm-status-opt {{cardEditStatus === '待跟进' ? 'active' : ''}}" data-status="待跟进" catchtap="onConfirmSetStatus">待跟进</view>
+        </view>
+      </view>
+
+      <!-- AI 追问建议 -->
+      <view class="ai-suggest-row" wx:if="{{!cardEditStatus}}">
+        <view class="ai-suggest-chip" catchtap="onConfirmSetRemind">
+          <text class="suggest-icon">🔔</text>
+          <text>设个提醒？</text>
+        </view>
+        <view class="ai-suggest-chip" catchtap="onConfirmGoDetail">
+          <text class="suggest-icon">✎</text>
+          <text>补充细节</text>
+        </view>
+      </view>
+
+      <!-- 底部操作 -->
+      <view class="confirm-actions">
+        <view class="confirm-action-btn confirm-delete" catchtap="onConfirmDelete">删除</view>
+        <view class="confirm-action-btn confirm-detail" catchtap="onConfirmGoDetail">完整编辑</view>
+        <view class="confirm-action-btn confirm-done" catchtap="onConfirmDismiss">知道了</view>
+      </view>
+    </block>
+
+    <!-- 批量记录确认卡片 -->
+    <block wx:if="{{confirmBatchRecords.length > 0}}">
+      <view class="confirm-header">
+        <view class="confirm-head-left">
+          <text class="confirm-title">已拆分 {{confirmBatchRecords.length}} 条记录</text>
+          <text class="confirm-ai-badge">AI 生成</text>
+        </view>
+        <view class="confirm-close" bindtap="onConfirmDismiss">
+          <view class="css-icon-close"></view>
+        </view>
+      </view>
+
+      <text class="confirm-batch-hint">AI 检测到一句话中涉及多人/多事，已自动拆分为独立记录</text>
+
+      <scroll-view class="confirm-batch-list" scroll-y>
+        <view
+          class="confirm-batch-item"
+          wx:for="{{confirmBatchRecords}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onConfirmBatchTapRecord"
+        >
+          <view class="cbi-left">
+            <view class="cbi-status-dot {{item.status === '已完成' ? 'done' : item.status === '待办' ? 'pending' : item.status === '待跟进' ? 'followup' : ''}}"></view>
+            <view class="cbi-body">
+              <text class="cbi-summary">{{item.summary || item.content}}</text>
+              <view class="cbi-meta" wx:if="{{item.people && item.people.length > 0}}">
+                <text class="cbi-people">{{item.people.join('、')}}</text>
+              </view>
+              <view class="cbi-meta" wx:if="{{item._groupName}}">
+                <view class="cbi-group-dot"></view>
+                <text class="cbi-group-name">{{item._groupName}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="cbi-delete" catchtap="onConfirmBatchDeleteRecord" data-id="{{item.id}}">
+            <view class="cbi-del-icon"></view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="confirm-actions">
+        <view class="confirm-action-btn confirm-done" catchtap="onConfirmDismiss">知道了</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- ============================================
+     + 操作菜单（ActionSheet 风格）
+     ============================================ -->
+  <view class="actions-overlay {{showActions ? 'show' : ''}}" bindtap="onToggleActions" catchtouchmove="noop"></view>
+  <view class="actions-sheet {{showActions ? 'show' : ''}}">
+    <view class="actions-header">
+      <text>快捷记录</text>
+      <view class="actions-close" bindtap="onToggleActions">
+        <view class="css-icon-close"></view>
+      </view>
+    </view>
+    <!-- 第一行 -->
+    <view class="actions-grid">
+      <view class="action-item" bindtap="onTakePhoto">
+        <view class="action-icon-wrap camera-bg">
+          <view class="css-icon-camera" style="border-color: #fff; --ink: #fff"></view>
+        </view>
+        <text class="action-label">拍照</text>
+      </view>
+      <view class="action-item" bindtap="onPickImages">
+        <view class="action-icon-wrap image-bg">
+          <view class="css-icon-image" style="border-color: #fff; --ink: #fff"></view>
+        </view>
+        <text class="action-label">选图片</text>
+      </view>
+      <view class="action-item" bindtap="onPickVideo">
+        <view class="action-icon-wrap video-bg">
+          <view class="css-icon-video" style="border-left-color: #fff"></view>
+        </view>
+        <text class="action-label">视频</text>
+      </view>
+      <view class="action-item" bindtap="onPasteText">
+        <view class="action-icon-wrap paste-bg">
+          <view class="css-icon-paste" style="border-color: #fff; --ink: #fff"></view>
+        </view>
+        <text class="action-label">粘贴</text>
+      </view>
+      <view class="action-item" bindtap="onGoImport">
+        <view class="action-icon-wrap import-bg">
+          <view class="css-icon-import-file"></view>
+        </view>
+        <text class="action-label">导入</text>
+      </view>
+    </view>
+    <!-- 第二行 -->
+    <view class="actions-grid">
+      <view class="action-item" bindtap="onDoodle" wx:if="{{showLab}}">
+        <view class="action-icon-wrap doodle-bg">
+          <view class="css-icon-doodle"></view>
+        </view>
+        <text class="action-label">涂鸦</text>
+      </view>
+      <view class="action-item" bindtap="onTableInput">
+        <view class="action-icon-wrap table-bg">
+          <view class="css-icon-table"></view>
+        </view>
+        <text class="action-label">表格</text>
+      </view>
+      <view class="action-item" bindtap="onScanDoc">
+        <view class="action-icon-wrap scan-bg">
+          <view class="css-icon-scan"></view>
+        </view>
+        <text class="action-label">扫描</text>
+      </view>
+      <view class="action-item" bindtap="onQuickRecord">
+        <view class="action-icon-wrap record-bg">
+          <view class="css-icon-mic" style="background: #fff"></view>
+        </view>
+        <text class="action-label">录音</text>
+      </view>
+      <view class="action-item" bindtap="onGoImport">
+        <view class="action-icon-wrap share-bg">
+          <view class="css-icon-share-doc"></view>
+        </view>
+        <text class="action-label">文档</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============================================
+     表格输入弹窗（3×3 简易表格 → Markdown）
+     ============================================ -->
+  <view class="table-overlay {{showTable ? 'show' : ''}}" bindtap="onCloseTable" catchtouchmove="noop"></view>
+  <view class="table-modal {{showTable ? 'show' : ''}}">
+    <view class="table-header">
+      <text class="table-title">表格记录</text>
+      <view class="table-close" bindtap="onCloseTable">
+        <view class="css-icon-close"></view>
+      </view>
+    </view>
+    <view class="table-hint">填写数据，AI 会智能解析为结构化记录</view>
+    <view class="table-grid">
+      <view class="table-row" wx:for="{{tableData}}" wx:key="ri" wx:for-item="row" wx:for-index="ri">
+        <input
+          class="table-cell {{ri === 0 ? 'header-cell' : ''}}"
+          wx:for="{{row}}"
+          wx:key="ci"
+          wx:for-item="cell"
+          wx:for-index="ci"
+          value="{{cell}}"
+          placeholder="{{ri === 0 ? '列' + (ci + 1) : ''}}"
+          data-ri="{{ri}}"
+          data-ci="{{ci}}"
+          bindinput="onTableCellInput"
+        />
+      </view>
+    </view>
+    <view class="table-bottom">
+      <view class="table-actions">
+        <text class="table-action-btn" bindtap="onAddTableRow">＋ 加行</text>
+        <text class="table-action-btn" bindtap="onAddTableCol">＋ 加列</text>
+        <text class="table-action-btn table-clear-btn" bindtap="onClearTable">清空</text>
+      </view>
+      <view class="table-submit {{hasTableContent ? '' : 'disabled'}}" bindtap="onSubmitTable">
+        <text>生成 Markdown 并解析</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============================================
+     粘贴文本弹窗（textarea）
+     ============================================ -->
+  <view class="paste-overlay {{showPaste ? 'show' : ''}}" bindtap="onClosePaste" catchtouchmove="noop"></view>
+  <view class="paste-modal {{showPaste ? 'show' : ''}}">
+    <view class="paste-header">
+      <text class="paste-title">粘贴记录</text>
+      <view class="paste-close" bindtap="onClosePaste">
+        <view class="css-icon-close"></view>
+      </view>
+    </view>
+    <textarea
+      class="paste-textarea"
+      value="{{pasteText}}"
+      placeholder="在此粘贴聊天记录、会议纪要、工作日志等文本..."
+      placeholder-style="color: #B5B0A8; font-size: 28rpx;"
+      bindinput="onPasteInput"
+      auto-height
+      maxlength="30000"
+    />
+    <view class="paste-bottom">
+      <text class="paste-count" wx:if="{{pasteText.length}}">{{pasteText.length}} 字</text>
+      <view class="paste-submit {{pasteText.trim() ? '' : 'disabled'}}" bindtap="onSubmitPaste">
+        <text>AI 解析并创建记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============================================
+     提醒弹窗（Phase 1 新增）
+     ============================================ -->
+  <view class="reminder-overlay {{showReminderPanel ? 'show' : ''}}" bindtap="onCloseReminders" catchtouchmove="noop"></view>
+  <view class="reminder-panel {{showReminderPanel ? 'show' : ''}}" catchtouchmove="noop">
+    <view class="rp-header">
+      <text class="rp-title">待办提醒</text>
+      <view class="rp-close" bindtap="onCloseReminders">✕</view>
+    </view>
+
+    <!-- 超期 -->
+    <view class="rp-section" wx:if="{{reminderData.overdue.length > 0}}">
+      <text class="rp-section-label">已超期</text>
+      <view class="rp-item" wx:for="{{reminderData.overdue}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapReminder">
+        <view class="rp-item-left">
+          <view class="rp-dot overdue"></view>
+          <view class="rp-body">
+            <text class="rp-summary">{{item.summary || item.content}}</text>
+            <text class="rp-time">到期 {{item.remindAt}}</text>
+          </view>
+        </view>
+        <view class="rp-actions">
+          <view class="rp-btn complete" catchtap="onQuickCompleteReminder" data-id="{{item.id}}">完成</view>
+          <view class="rp-btn cancel" catchtap="onQuickCancelReminder" data-id="{{item.id}}">取消</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 即将到期 -->
+    <view class="rp-section" wx:if="{{reminderData.upcoming.length > 0}}">
+      <text class="rp-section-label">即将到期</text>
+      <view class="rp-item" wx:for="{{reminderData.upcoming}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapReminder">
+        <view class="rp-item-left">
+          <view class="rp-dot upcoming"></view>
+          <view class="rp-body">
+            <text class="rp-summary">{{item.summary || item.content}}</text>
+            <text class="rp-time">到期 {{item.remindAt}}</text>
+          </view>
+        </view>
+        <view class="rp-actions">
+          <view class="rp-btn complete" catchtap="onQuickCompleteReminder" data-id="{{item.id}}">完成</view>
+          <view class="rp-btn cancel" catchtap="onQuickCancelReminder" data-id="{{item.id}}">取消</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="rp-empty" wx:if="{{reminderData.total === 0}}">
+      <text class="rp-empty-text">暂无待办提醒</text>
+      <text class="rp-empty-desc">在记录详情页可以为待办事项设置提醒时间</text>
+    </view>
+  </view>
+
+</view>

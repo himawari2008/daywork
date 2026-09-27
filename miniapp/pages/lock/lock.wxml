@@ -1,0 +1,53 @@
+<!--
+活记 · 隐私锁屏 — 对标 Day One Face ID / 声间本地私密
+6位PIN码 + 生物认证
+零 emoji · CSS 纯图标
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <view class="lock-container">
+    <!-- 品牌标识 -->
+    <view class="lock-brand">
+      <view class="lock-logo">
+        <view class="css-icon-lock"></view>
+      </view>
+      <text class="lock-app-name">活记</text>
+      <text class="lock-hint">{{lockHint}}</text>
+    </view>
+
+    <!-- PIN 输入区 — 6 个圆点 -->
+    <view class="pin-dots">
+      <view class="pin-dot {{pinLength >= 1 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+      <view class="pin-dot {{pinLength >= 2 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+      <view class="pin-dot {{pinLength >= 3 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+      <view class="pin-dot {{pinLength >= 4 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+      <view class="pin-dot {{pinLength >= 5 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+      <view class="pin-dot {{pinLength >= 6 ? 'filled' : ''}} {{shake ? 'shake' : ''}}"></view>
+    </view>
+
+    <!-- 数字键盘 -->
+    <view class="num-pad">
+      <view class="num-row" wx:for="{{numRows}}" wx:key="index">
+        <view
+          class="num-key {{item === '' ? 'empty' : ''}}"
+          wx:for="{{item}}"
+          wx:key="*this"
+          wx:for-item="key"
+          data-key="{{key}}"
+          bindtap="onNumTap"
+        >
+          <text class="num-key-text" wx:if="{{key !== ''}}">{{key}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="lock-footer">
+      <!-- 生物认证按钮 -->
+      <view class="bio-btn" wx:if="{{bioSupported}}" bindtap="onBioAuth">
+        <view class="css-icon-fingerprint"></view>
+        <text>指纹/面容解锁</text>
+      </view>
+      <text class="forgot-hint" wx:elif="{{!isFirstSetup}}">忘记密码？数据无法恢复，但可以清除数据后重新开始</text>
+    </view>
+  </view>
+</view>

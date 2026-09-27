@@ -1,0 +1,212 @@
+/* ========================================
+   活记 · 首次引导页
+   暖色有机极简 · 3 页滑动
+   ======================================== */
+
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, #FBFAF8 0%, #F5F2ED 100%);
+  padding-top: 120rpx;
+  box-sizing: border-box;
+}
+
+.swiper {
+  flex: 1;
+  width: 100%;
+}
+
+.slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 60rpx;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* —— 图标 —— */
+.icon-wrap {
+  width: 220rpx; height: 220rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60rpx;
+}
+
+/* 语音图标 */
+.voice-icon { position: relative; }
+.oi-mic {
+  width: 48rpx; height: 72rpx;
+  background: var(--accent);
+  border-radius: 28rpx;
+  position: relative;
+}
+.oi-waves {
+  position: absolute;
+  right: -40rpx; top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6rpx;
+}
+.oi-wave {
+  width: 5rpx;
+  background: var(--accent);
+  border-radius: 3rpx;
+  animation: oi-waving 1s ease-in-out infinite;
+}
+.oi-wave:nth-child(1) { height: 20rpx; animation-delay: 0s; }
+.oi-wave:nth-child(2) { height: 36rpx; animation-delay: 0.2s; }
+.oi-wave:nth-child(3) { height: 24rpx; animation-delay: 0.4s; }
+@keyframes oi-waving {
+  0%,100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.3); }
+}
+
+/* AI 图标 */
+.ai-icon { position: relative; }
+.oi-brain {
+  width: 80rpx; height: 80rpx;
+  border: 5rpx solid var(--brand);
+  border-radius: 50%;
+  position: relative;
+}
+.oi-brain::after {
+  content: '';
+  position: absolute;
+  top: 6rpx; left: 50%;
+  transform: translateX(-50%);
+  width: 20rpx; height: 36rpx;
+  border-radius: 10rpx;
+  background: var(--brand);
+}
+.oi-sparkles {
+  position: absolute;
+  width: 100%; height: 100%;
+  top: 0; left: 0;
+}
+.oi-spark {
+  position: absolute;
+  width: 8rpx; height: 8rpx;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: oi-sparkle 1.5s ease-in-out infinite;
+}
+.oi-spark:nth-child(1) { top: -6rpx; right: 8rpx; animation-delay: 0s; }
+.oi-spark:nth-child(2) { bottom: 10rpx; left: -4rpx; animation-delay: 0.5s; }
+.oi-spark:nth-child(3) { top: 20rpx; right: -10rpx; animation-delay: 1s; }
+@keyframes oi-sparkle {
+  0%,100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 回顾图标 */
+.review-icon { position: relative; }
+.oi-book {
+  width: 72rpx; height: 90rpx;
+  background: #6EA880;
+  border-radius: 6rpx 16rpx 16rpx 6rpx;
+  border: 4rpx solid #6EA880;
+  position: relative;
+}
+.oi-book::after {
+  content: '';
+  position: absolute;
+  top: 4rpx; left: 10rpx;
+  width: 2rpx; height: 76rpx;
+  background: rgba(255,255,255,0.4);
+}
+.oi-pages {
+  position: absolute;
+  right: -24rpx; top: 10rpx;
+}
+.oi-page {
+  width: 24rpx; height: 3rpx;
+  background: #6EA880;
+  border-radius: 2rpx;
+  margin-bottom: 6rpx;
+  opacity: 0.6;
+}
+
+/* —— 文字 —— */
+.slide-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+.slide-desc {
+  font-size: 30rpx;
+  color: var(--ink-faint);
+  line-height: 1.7;
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* —— 底部按钮 —— */
+.bottom {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 40rpx 60rpx 60rpx;
+  box-sizing: border-box;
+}
+.onboard-skip {
+  font-size: 30rpx;
+  color: var(--ink-faint);
+  padding: 20rpx 40rpx;
+}
+.onboard-skip:active { opacity: 0.5; }
+.onboard-next {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+  padding: 20rpx 40rpx;
+  border-radius: 40rpx;
+  background: rgba(74,92,124,0.08);
+}
+.onboard-next:active { opacity: 0.7; }
+.onboard-next.ready {
+  color: #fff;
+  background: var(--accent);
+}
+
+/* —— 启动闪屏覆盖层（整合进 onboarding，规避新建页被依赖分析忽略）—— */
+.splash-mask {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #FF8A4C 0%, #E8815C 55%, #D07050 100%);
+}
+.splash-mark {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 32rpx;
+}
+.splash-name {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 6rpx;
+}
+.splash-tag {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 14rpx;
+  letter-spacing: 1rpx;
+}
+.splash-copy {
+  position: absolute;
+  bottom: 56rpx;
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.6);
+}

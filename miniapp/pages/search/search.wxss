@@ -1,0 +1,267 @@
+/* ========================================
+   活记 v3 · 搜索页
+   呼吸感 · CSS纯图标 · 零 emoji
+   ======================================== */
+
+.page {
+  padding: 0 36rpx 120rpx;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ========================================
+   搜索栏 — 圆润通透
+   ======================================== */
+
+.search-bar {
+  padding: 24rpx 0 14rpx;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #F4F2EF;
+  border-radius: 24rpx;
+  padding: 18rpx 22rpx;
+  gap: 14rpx;
+  transition: background 150ms;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+/* CSS 清除按钮 — X */
+.search-clear {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #E0DBD4;
+}
+
+.clear-x {
+  position: relative;
+  width: 16rpx;
+  height: 16rpx;
+}
+.clear-x::before,
+.clear-x::after {
+  content: '';
+  position: absolute;
+  width: 2rpx;
+  height: 16rpx;
+  background: var(--ink-faint);
+  top: 0;
+  left: 7rpx;
+  border-radius: 1rpx;
+}
+.clear-x::before { transform: rotate(45deg); }
+.clear-x::after  { transform: rotate(-45deg); }
+
+/* ========================================
+   筛选栏
+   ======================================== */
+
+.filters {
+  margin-bottom: 18rpx;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  white-space: nowrap;
+  padding: 12rpx 0;
+}
+
+.filter-label {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  margin-right: 4rpx;
+}
+
+.filter-chip {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  padding: 10rpx 22rpx;
+  border-radius: 18rpx;
+  background: #F4F2EF;
+  flex-shrink: 0;
+  transition: all 150ms;
+}
+.filter-chip:active { background: #E8E5E0; }
+
+.filter-chip.active {
+  color: #fff;
+  background: var(--accent);
+}
+
+/* ========================================
+   加载
+   ======================================== */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+  gap: 18rpx;
+}
+
+.loading-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: breathe-dot 1.6s ease-in-out infinite;
+}
+
+.loading-text {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   空结果
+   ======================================== */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+  gap: 18rpx;
+}
+
+.empty-search-icon {
+  width: 42rpx;
+  height: 42rpx;
+  border-color: var(--ink-faint);
+  opacity: 0.35;
+  margin-bottom: 10rpx;
+}
+.empty-search-icon::after {
+  width: 4rpx;
+  height: 18rpx;
+  background: var(--ink-faint);
+  bottom: -3rpx;
+  right: -3rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: var(--ink-soft);
+}
+
+.empty-hint {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   结果列表 — 更多呼吸空间
+   ======================================== */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.result-card {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 26rpx 28rpx;
+  box-shadow: 0 1rpx 10rpx rgba(0,0,0,0.03);
+  transition: transform 150ms;
+}
+.result-card:active { transform: scale(0.985); }
+
+.rc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.rc-time {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+.rc-status {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+.rc-status-pending {
+  color: var(--pending);
+  background: #FDF6ED;
+}
+
+.rc-status-done {
+  color: var(--done);
+  background: #EDF5EF;
+}
+
+.rc-status-followup {
+  color: var(--followup);
+  background: #FDF8ED;
+}
+
+.rc-summary {
+  font-size: 30rpx;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 12rpx;
+}
+
+/* 关键词高亮 */
+.rc-highlight {
+  font-size: 30rpx;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.rc-highlight.hl {
+  color: var(--accent);
+  font-weight: 500;
+  background: #FFF2ED;
+  border-radius: 4rpx;
+  padding: 0 2rpx;
+}
+
+.rc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.rc-tag {
+  font-size: 22rpx;
+  color: var(--brand);
+  background: #EEF0F6;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+/* 结果计数 */
+.result-count {
+  display: flex;
+  justify-content: center;
+  padding: 36rpx 0;
+}
+
+.rc-text {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}

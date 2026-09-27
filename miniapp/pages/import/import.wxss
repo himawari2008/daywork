@@ -1,0 +1,747 @@
+/* ========================================
+   活记 · 导入页
+   暖色有机极简 · CSS 纯图标
+   ======================================== */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   Step 1: 输入
+   ======================================== */
+
+.step-input {
+  padding: 32rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Tab 切换 */
+.input-tabs {
+  display: flex;
+  background: #F4F2EF;
+  border-radius: 22rpx;
+  padding: 6rpx;
+  margin-bottom: 32rpx;
+}
+
+.input-tab {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 18rpx;
+  font-size: 28rpx;
+  color: var(--ink-soft);
+  transition: all 180ms ease-out;
+}
+
+.input-tab.active {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+/* 上传区 */
+.upload-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border-radius: 20rpx;
+  border: 2rpx dashed var(--divider);
+  min-height: 400rpx;
+}
+
+.upload-icon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding: 60rpx 40rpx;
+}
+
+/* CSS 上传图标 */
+.css-icon-upload {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--accent);
+  position: relative;
+}
+.css-icon-upload::after {
+  content: '';
+  position: absolute;
+  width: 28rpx;
+  height: 3rpx;
+  background: var(--accent);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2rpx;
+}
+.css-icon-upload::before {
+  content: '';
+  position: absolute;
+  width: 3rpx;
+  height: 28rpx;
+  background: var(--accent);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2rpx;
+}
+
+.upload-action {
+  font-size: 30rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* 已选文件卡片 */
+.upload-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 32rpx;
+  background: var(--surface);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.04);
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 24rpx;
+  background: #F8F6F3;
+  border-radius: 16rpx;
+}
+
+/* CSS 文件图标 */
+.css-icon-doc {
+  width: 44rpx;
+  height: 56rpx;
+  background: var(--brand);
+  border-radius: 6rpx;
+  position: relative;
+  flex-shrink: 0;
+}
+.css-icon-doc::after {
+  content: '';
+  position: absolute;
+  top: 12rpx;
+  left: 10rpx;
+  width: 24rpx;
+  height: 3rpx;
+  background: rgba(255,255,255,0.4);
+  border-radius: 2rpx;
+  box-shadow: 0 8rpx 0 rgba(255,255,255,0.4), 0 16rpx 0 rgba(255,255,255,0.4);
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: var(--ink);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  margin-top: 4rpx;
+  display: block;
+}
+
+.file-remove {
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: var(--ink-faint);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.file-remove:active { background: rgba(0,0,0,0.05); }
+
+.upload-change-btn {
+  text-align: center;
+}
+.upload-change-btn text {
+  font-size: 26rpx;
+  color: var(--brand);
+}
+
+/* 粘贴区 */
+.paste-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.paste-textarea {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  min-height: 500rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--ink);
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.03);
+}
+
+.paste-count {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12rpx 8rpx;
+}
+
+.paste-count text {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+/* 补充说明（v4 新增） */
+.supplement-area {
+  margin-top: 18rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.supp-label {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+.supp-input {
+  background: var(--surface);
+  border-radius: 16rpx;
+  padding: 18rpx 20rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--ink);
+  min-height: 80rpx;
+}
+
+/* 错误 */
+.import-error {
+  margin-top: 18rpx;
+  padding: 18rpx 24rpx;
+  background: #FFF2ED;
+  border-radius: 14rpx;
+}
+.import-error text {
+  font-size: 26rpx;
+  color: var(--accent);
+  line-height: 1.6;
+}
+
+/* 解析按钮 */
+.parse-btn {
+  margin-top: 24rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms;
+}
+.parse-btn:active { background: var(--accent-dim); }
+.parse-btn.disabled {
+  background: #E7E3DC;
+  pointer-events: none;
+}
+.parse-btn text {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 500;
+}
+.parse-btn.disabled text { color: var(--ink-faint); }
+
+.parse-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18rpx;
+  padding: 48rpx 0;
+}
+
+.loading-text {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   Step 2: 审核
+   ======================================== */
+
+.step-review {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 文档摘要 */
+.review-summary-card {
+  padding: 32rpx 40rpx 24rpx;
+  border-bottom: 1rpx solid var(--divider);
+  flex-shrink: 0;
+}
+
+.review-label {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.review-summary-text {
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: var(--ink);
+  display: block;
+}
+
+.review-summary-count {
+  font-size: 22rpx;
+  color: var(--brand);
+  display: block;
+  margin-top: 12rpx;
+}
+
+/* 记录列表 */
+.review-list {
+  flex: 1;
+  padding: 0 40rpx;
+  overflow-y: auto;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--divider);
+  transition: opacity 150ms;
+}
+
+.review-item.unchecked {
+  opacity: 0.45;
+}
+
+/* 勾选框 */
+.review-check {
+  padding-top: 2rpx;
+  flex-shrink: 0;
+}
+
+.check-box {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  border: 2rpx solid var(--divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms;
+}
+.check-box.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.check-box text {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 记录内容 */
+.review-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-summary-line {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.review-item-summary {
+  font-size: 30rpx;
+  line-height: 1.5;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.review-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  align-items: center;
+}
+
+.rim-tag {
+  font-size: 20rpx;
+  color: var(--brand);
+  background: #EEF0F6;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.rim-status {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+}
+.status-pending  { color: var(--pending);  background: #FDF6ED; }
+.status-done     { color: var(--done);     background: #EDF5F0; }
+.status-followup { color: var(--followup); background: #FEF9ED; }
+.status-none     { color: var(--ink-faint); }
+
+.rim-group {
+  font-size: 20rpx;
+  color: var(--ink-soft);
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  background: #F2F1EE;
+}
+
+.expand-hint {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+  margin-top: 8rpx;
+  display: block;
+}
+
+/* 展开编辑区 */
+.review-expand {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  background: #F8F6F3;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.re-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.re-label {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+}
+
+.re-input {
+  font-size: 28rpx;
+  color: var(--ink);
+  padding: 10rpx 14rpx;
+  background: var(--surface);
+  border-radius: 10rpx;
+}
+
+.re-value {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.re-status {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.re-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.re-tag {
+  font-size: 22rpx;
+  color: var(--brand);
+  background: #EDEFF5;
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+/* 删除 */
+.review-delete {
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  border-radius: 50%;
+  margin-top: -4rpx;
+}
+.review-delete:active { background: rgba(208,112,80,0.08); color: var(--danger); }
+
+.review-empty {
+  display: flex;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+.review-empty text {
+  font-size: 28rpx;
+  color: var(--ink-faint);
+}
+
+.review-spacer { height: 40rpx; }
+
+/* 底部保存栏 */
+.review-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 40rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--divider);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.rb-count {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+
+.rb-save-btn {
+  padding: 18rpx 36rpx;
+  border-radius: 24rpx;
+  background: var(--accent);
+  transition: background 150ms;
+}
+.rb-save-btn:active { background: var(--accent-dim); }
+.rb-save-btn.disabled {
+  background: #E7E3DC;
+  pointer-events: none;
+}
+.rb-save-btn.saving {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.rb-save-btn text {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 500;
+}
+.rb-save-btn.disabled text { color: var(--ink-faint); }
+
+/* ========================================
+   Step 3: 完成
+   ======================================== */
+
+.step-done {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  gap: 16rpx;
+}
+
+.done-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #EDF5F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+
+.done-check {
+  font-size: 56rpx;
+  color: var(--done);
+  font-weight: 700;
+  animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.done-title {
+  font-size: 40rpx;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.done-desc {
+  font-size: 28rpx;
+  color: var(--ink-soft);
+}
+
+.done-hint {
+  font-size: 24rpx;
+  color: var(--done);
+  background: #EDF5F0;
+  padding: 14rpx 24rpx;
+  border-radius: 14rpx;
+  margin-top: 8rpx;
+}
+
+.done-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 40rpx;
+  width: 100%;
+  max-width: 400rpx;
+}
+
+.done-btn {
+  height: 92rpx;
+  border-radius: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4F2EF;
+  font-size: 30rpx;
+  color: var(--ink);
+}
+.done-btn:active { background: #EAE7E2; }
+
+.done-btn.primary {
+  background: var(--accent);
+  color: #fff;
+}
+.done-btn.primary:active { background: var(--accent-dim); }
+
+/* ========================================
+   CSV 标准导入
+   ======================================== */
+
+.csv-zone {
+  padding: 0 4rpx;
+}
+
+.csv-hint {
+  background: #FDF6ED;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 24rpx;
+  font-size: 24rpx;
+  color: var(--accent);
+  line-height: 1.6;
+}
+.csv-hint-sub {
+  display: block;
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  margin-top: 4rpx;
+}
+
+.csv-file-pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 80rpx;
+  border: 2rpx dashed var(--divider);
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  color: var(--brand);
+  margin-bottom: 20rpx;
+}
+.csv-file-pick:active { background: var(--accent-bg); }
+
+.csv-or-label {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  margin-bottom: 16rpx;
+}
+
+.csv-textarea {
+  width: 100%;
+  min-height: 240rpx;
+  background: var(--surface);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: var(--ink);
+  line-height: 1.6;
+  font-family: monospace;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.03);
+  box-sizing: border-box;
+}
+
+.csv-enhance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  margin-top: 16rpx;
+  border-top: 1rpx solid var(--divider);
+}
+.csv-enhance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.csv-enhance-label {
+  font-size: 28rpx;
+  color: var(--ink);
+  font-weight: 500;
+}
+.csv-enhance-desc {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+.csv-result {
+  padding: 20rpx 0;
+  text-align: center;
+}
+.csv-result-ok {
+  font-size: 28rpx;
+  color: #6EA880;
+  font-weight: 500;
+}
+.csv-result-err {
+  font-size: 28rpx;
+  color: #D08070;
+  font-weight: 500;
+}

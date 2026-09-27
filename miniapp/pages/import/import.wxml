@@ -1,0 +1,281 @@
+<!--
+活记 · 导入页 — 批量文档/图片导入
+支持：上传文件（txt/csv/图片）+ 粘贴文本
+流程：输入 → AI解析预览 → 审核编辑 → 批量保存
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+
+  <!-- ============================================
+     Step 1: 输入
+     ============================================ -->
+  <view class="step-input" wx:if="{{step === 'input'}}">
+
+    <!-- Tab 切换 -->
+    <view class="input-tabs">
+      <view class="input-tab {{currentTab === 'file' ? 'active' : ''}}" data-tab="file" bindtap="onSwitchTab">
+        <text>上传文件</text>
+      </view>
+      <view class="input-tab {{currentTab === 'paste' ? 'active' : ''}}" data-tab="paste" bindtap="onSwitchTab">
+        <text>粘贴文本</text>
+      </view>
+      <view class="input-tab {{currentTab === 'csv' ? 'active' : ''}}" data-tab="csv" bindtap="onSwitchTab">
+        <text>CSV标准导入</text>
+      </view>
+    </view>
+
+    <!-- 文件上传区 -->
+    <view class="upload-zone" wx:if="{{currentTab === 'file'}}">
+      <!-- 未选择文件 -->
+      <view class="upload-empty" wx:if="{{!selectedFile}}">
+        <view class="upload-icon-wrap" bindtap="onSelectFile">
+          <view class="css-icon-upload"></view>
+          <text class="upload-action">点击选择文件</text>
+          <text class="upload-hint">支持 txt、csv、json 文本文件，以及 jpg/png 图片（自动OCR识别）</text>
+        </view>
+      </view>
+      <!-- 已选择文件 -->
+      <view class="upload-selected" wx:if="{{selectedFile}}">
+        <view class="file-card">
+          <view class="css-icon-doc {{selectedFile._isImage ? 'is-image' : ''}}"></view>
+          <view class="file-info">
+            <text class="file-name">{{selectedFile.name}}</text>
+            <text class="file-size">{{selectedFile._sizeLabel}}</text>
+            <text class="file-type-tag" wx:if="{{selectedFile._isImage}}">图片</text>
+            <text class="file-type-tag doc" wx:if="{{!selectedFile._isImage}}">文本</text>
+          </view>
+          <view class="file-remove" bindtap="onRemoveFile">✕</view>
+        </view>
+        <view class="upload-change-btn" bindtap="onSelectFile">
+          <text>重新选择</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文本粘贴区 -->
+    <view class="paste-zone" wx:if="{{currentTab === 'paste'}}">
+      <textarea
+        class="paste-textarea"
+        value="{{pasteText}}"
+        placeholder="在此粘贴聊天记录、会议纪要、工作日志等文档内容..."
+        placeholder-style="color: #B5B0A8; font-size: 28rpx;"
+        bindinput="onPasteInput"
+        auto-height
+        maxlength="50000"
+      />
+      <view class="paste-count" wx:if="{{pasteText.length > 0}}">
+        <text>{{pasteText.length}} / 30000 字符</text>
+      </view>
+    </view>
+
+    <!-- CSV 标准导入区 -->
+    <view class="csv-zone" wx:if="{{currentTab === 'csv'}}">
+      <view class="csv-hint">
+        <text>CSV 首行必须是列名：摘要,标签,人物,状态,心情,数值,时间</text>
+        <text class="csv-hint-sub">标签和人物用中文顿号（、）分隔，时间格式 YYYY-MM-DD</text>
+      </view>
+
+      <!-- 选择 CSV 文件 -->
+      <view class="csv-file-pick" bindtap="onPickCsvFile">
+        <view class="css-icon-upload"></view>
+        <text wx:if="{{!csvFileName}}">选择 CSV 文件</text>
+        <text wx:if="{{csvFileName}}">已选：{{csvFileName}}</text>
+      </view>
+
+      <!-- 或粘贴 CSV 内容 -->
+      <text class="csv-or-label">— 或直接粘贴 CSV 内容 —</text>
+      <textarea
+        class="csv-textarea"
+        value="{{csvText}}"
+        placeholder="摘要,标签,人物,状态,心情,数值,时间&#10;&quot;跟老张谈瓷砖报价3200元&quot;,&quot;工作,采购&quot;,老张,待跟进,,&quot;金额:3200元&quot;,2026-07-10&#10;&quot;帮小李改客厅方案&quot;,设计,小李,已完成,开心,,2026-07-11"
+        placeholder-style="color: #B5B0A8; font-size: 26rpx; line-height: 1.6;"
+        bindinput="onCsvInput"
+        auto-height
+        maxlength="50000"
+      />
+
+      <!-- AI 增强开关 -->
+      <view class="csv-enhance-row">
+        <view class="csv-enhance-info">
+          <text class="csv-enhance-label">AI 增强</text>
+          <text class="csv-enhance-desc">自动补充标签、分组建议、状态检测</text>
+        </view>
+        <switch checked="{{csvEnhance}}" bindchange="onCsvEnhanceToggle" color="#E8815C" />
+      </view>
+
+      <!-- 导入按钮 -->
+      <view class="parse-btn {{csvText ? '' : 'disabled'}}" bindtap="onCsvImport">
+        <text wx:if="{{!csvImporting}}">{{csvEnhance ? 'AI 增强导入' : '直接导入 CSV'}}</text>
+        <text wx:if="{{csvImporting}}">导入中...</text>
+      </view>
+
+      <!-- 结果 -->
+      <view class="csv-result" wx:if="{{csvResult}}">
+        <text class="csv-result-ok" wx:if="{{csvResult.success}}">✅ {{csvResult.message}}</text>
+        <text class="csv-result-err" wx:if="{{!csvResult.success}}">❌ {{csvResult.message}}</text>
+      </view>
+    </view>
+
+    <!-- 错误提示 -->
+    <view class="import-error" wx:if="{{error}}">
+      <text>{{error}}</text>
+    </view>
+
+    <!-- 补充说明（v4 新增 — AI 解析前给上下文） -->
+    <view class="supplement-area" wx:if="{{canParse}}">
+      <text class="supp-label">补充说明（可选）</text>
+      <textarea
+        class="supp-input"
+        value="{{supplementNote}}"
+        placeholder="给 AI 加一点上下文，帮助更准确理解内容..."
+        placeholder-style="color: #B5B0A8; font-size: 26rpx;"
+        bindinput="onSupplementInput"
+        auto-height
+        maxlength="500"
+      />
+    </view>
+
+    <!-- 解析按钮 -->
+    <view class="parse-btn {{canParse ? '' : 'disabled'}}" bindtap="onParse">
+      <text wx:if="{{!parsing}}">AI 解析文档</text>
+      <text wx:if="{{parsing}}">解析中...</text>
+    </view>
+
+    <!-- 解析中 loading -->
+    <view class="parse-loading" wx:if="{{parsing}}">
+      <view class="loader-eq">
+        <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+        <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+        <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+        <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+        <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+        <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+        <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+      </view>
+      <text class="loading-text">AI 正在理解你的文档...</text>
+    </view>
+  </view>
+
+  <!-- ============================================
+     Step 2: 审核
+     ============================================ -->
+  <view class="step-review" wx:if="{{step === 'review'}}">
+
+    <!-- 文档摘要卡片 -->
+    <view class="review-summary-card">
+      <text class="review-label">📄 文档摘要</text>
+      <text class="review-summary-text">{{documentSummary}}</text>
+      <text class="review-summary-count">共识别 {{records.length}} 条记录</text>
+    </view>
+
+    <!-- 记录列表 -->
+    <scroll-view class="review-list" scroll-y>
+      <view
+        class="review-item {{item._checked ? '' : 'unchecked'}}"
+        wx:for="{{records}}"
+        wx:key="_index"
+      >
+        <!-- 勾选框 -->
+        <view class="review-check" data-index="{{index}}" catchtap="onToggleCheck">
+          <view class="check-box {{item._checked ? 'checked' : ''}}">
+            <text wx:if="{{item._checked}}">✓</text>
+          </view>
+        </view>
+
+        <!-- 记录内容 -->
+        <view class="review-body" data-index="{{index}}" bindtap="onToggleExpand">
+          <!-- 折叠态：摘要 + 元信息 -->
+          <view class="review-summary-line">
+            <text class="review-item-summary">{{item.summary}}</text>
+            <view class="review-item-meta">
+              <text class="rim-tag" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+              <text class="rim-status status-{{item.status === '待办' ? 'pending' : item.status === '已完成' ? 'done' : item.status === '待跟进' ? 'followup' : 'none'}}" wx:if="{{item.status}}">{{item.status}}</text>
+              <text class="rim-group" wx:if="{{item.suggestedGroupName}}">📁 {{item.suggestedGroupName}}</text>
+            </view>
+          </view>
+
+          <!-- 展开态：完整编辑 -->
+          <view class="review-expand" wx:if="{{item._expanded}}">
+            <!-- 摘要编辑 -->
+            <view class="re-field">
+              <text class="re-label">摘要</text>
+              <input class="re-input" value="{{item.summary}}" data-index="{{index}}" data-field="summary" bindinput="onEditField" />
+            </view>
+            <!-- 标签编辑 -->
+            <view class="re-field">
+              <text class="re-label">标签</text>
+              <view class="re-tags">
+                <text class="re-tag" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+              </view>
+            </view>
+            <!-- 人物 -->
+            <view class="re-field" wx:if="{{item.people && item.people.length > 0}}">
+              <text class="re-label">人物</text>
+              <text class="re-value">{{item.people.join('、')}}</text>
+            </view>
+            <!-- 状态 -->
+            <view class="re-field" wx:if="{{item.status}}">
+              <text class="re-label">状态</text>
+              <text class="re-value re-status">{{item.status}}</text>
+            </view>
+            <!-- 心情 -->
+            <view class="re-field" wx:if="{{item._moodLabel}}">
+              <text class="re-label">心情</text>
+              <text class="re-value">{{item._moodLabel}}</text>
+            </view>
+            <!-- 时间 -->
+            <view class="re-field" wx:if="{{item.recordedAt}}">
+              <text class="re-label">时间</text>
+              <text class="re-value">{{item.recordedAt}}</text>
+            </view>
+            <!-- AI 建议分组 -->
+            <view class="re-field" wx:if="{{item.suggestedGroupName}}">
+              <text class="re-label">AI 建议分组</text>
+              <text class="re-value re-group">{{item.suggestedGroupName}}</text>
+            </view>
+          </view>
+
+          <!-- 展开提示 -->
+          <text class="expand-hint" wx:if="{{!item._expanded}}">点击展开详情</text>
+        </view>
+
+        <!-- 删除按钮 -->
+        <view class="review-delete" data-index="{{index}}" catchtap="onDeleteRecord">
+          <text>✕</text>
+        </view>
+      </view>
+
+      <!-- 空列表 -->
+      <view class="review-empty" wx:if="{{records.length === 0}}">
+        <text>所有记录已移除</text>
+      </view>
+
+      <view class="review-spacer"></view>
+    </scroll-view>
+
+    <!-- 底部保存栏 -->
+    <view class="review-bottom">
+      <text class="rb-count">已选 {{checkedCount}} / {{records.length}} 条</text>
+      <view class="rb-save-btn {{checkedCount > 0 ? '' : 'disabled'}} {{saving ? 'saving' : ''}}" bindtap="onSave">
+        <text wx:if="{{!saving}}">保存 {{checkedCount}} 条记录</text>
+        <text wx:if="{{saving}}">保存中...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============================================
+     Step 3: 完成
+     ============================================ -->
+  <view class="step-done" wx:if="{{step === 'done'}}">
+    <view class="done-icon">
+      <view class="done-check">✓</view>
+    </view>
+    <text class="done-title">导入完成</text>
+    <text class="done-desc">已成功导入 {{savedCount}} 条记录</text>
+    <text class="done-hint" wx:if="{{autoCompleted > 0}}">同时自动完成了 {{autoCompleted}} 条关联的待办事项</text>
+    <view class="done-actions">
+      <view class="done-btn primary" bindtap="onViewAll">查看全部记录</view>
+      <view class="done-btn" bindtap="onGoHome">返回首页</view>
+    </view>
+  </view>
+
+</view>

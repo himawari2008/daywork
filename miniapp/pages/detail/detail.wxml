@@ -1,0 +1,293 @@
+<!--
+活记 v2 · 详情页 — 石子的纹理
+AI解析确认 + 编辑 + 心情选择
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loader-eq">
+      <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+      <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+      <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+      <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+      <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+      <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+      <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+    </view>
+  </view>
+
+  <block wx:if="{{!loading && record}}">
+    <!-- 原始内容（引述区，v5 可编辑） -->
+    <view class="quote-block">
+      <text class="quote-text" wx:if="{{!editing.content}}" bindtap="onEditContent">{{record.content}}</text>
+      <textarea
+        wx:if="{{editing.content}}"
+        class="quote-textarea"
+        value="{{record.content}}"
+        placeholder="记录的原始内容"
+        focus="{{editing.content}}"
+        bindinput="onContentInput"
+        bindblur="onContentBlur"
+        auto-height
+        maxlength="2000"
+      />
+      <view class="quote-edit-hint" wx:if="{{!editing.content}}">
+        <text>点击修改原文</text>
+      </view>
+    </view>
+
+    <!-- 原始录音回放 -->
+    <view class="voice-player" wx:if="{{hasVoice}}" bindtap="onToggleVoice">
+      <view class="vp-icon {{voicePlaying ? 'playing' : ''}}"></view>
+      <text class="vp-label">{{voicePlaying ? '播放中...' : '回放原始录音'}}</text>
+      <view class="vp-wave" wx:if="{{voicePlaying}}">
+        <view class="vp-bar"></view><view class="vp-bar"></view><view class="vp-bar"></view>
+      </view>
+    </view>
+
+    <!-- AI 解析字段 -->
+    <view class="fields">
+
+      <!-- AI 生成合规标识 -->
+      <view class="ai-gen-row">
+        <text class="ai-gen-badge">AI 生成</text>
+      </view>
+
+      <!-- 摘要 -->
+      <view class="field">
+        <text class="field-label">摘要</text>
+        <view class="field-value-wrap" bindtap="onEditField" data-field="summary">
+          <text class="field-value" wx:if="{{!editing.summary}}">{{editValues.summary || '点击设置摘要'}}</text>
+          <input
+            wx:if="{{editing.summary}}"
+            class="field-input"
+            value="{{editValues.summary}}"
+            placeholder="一句话概括"
+            focus="{{editing.summary}}"
+            bindinput="onFieldInput"
+            data-field="summary"
+            bindblur="onFieldBlur"
+            data-field="summary"
+            bindconfirm="onFieldBlur"
+            data-field="summary"
+          />
+        </view>
+      </view>
+
+      <!-- 标签 -->
+      <view class="field">
+        <text class="field-label">标签</text>
+        <view class="tag-row">
+          <view class="tag-pill" wx:for="{{editValues.tags}}" wx:key="*this" wx:for-item="t">
+            <text class="tag-name">{{t}}</text>
+            <view class="tag-del" catchtap="onRemoveTag" data-tag="{{t}}">×</view>
+          </view>
+          <view class="tag-pill tag-adding" wx:if="{{addingTag}}">
+            <input class="tag-input" value="{{newTag}}" placeholder="新标签"
+              focus="{{addingTag}}" bindinput="onNewTagInput"
+              bindblur="onConfirmTag" bindconfirm="onConfirmTag" maxlength="10"/>
+          </view>
+          <view class="tag-add-btn" wx:if="{{!addingTag}}" catchtap="onShowAddTag">＋</view>
+        </view>
+      </view>
+
+      <!-- 人物 -->
+      <view class="field">
+        <text class="field-label">人物</text>
+        <view class="tag-row">
+          <view class="tag-pill person" wx:for="{{editValues.people}}" wx:key="*this" wx:for-item="p">
+            <text class="tag-name">{{p}}</text>
+            <view class="tag-del" catchtap="onRemovePerson" data-person="{{p}}">×</view>
+          </view>
+          <view class="tag-pill tag-adding person" wx:if="{{addingPerson}}">
+            <input class="tag-input" value="{{newPerson}}" placeholder="人名"
+              focus="{{addingPerson}}" bindinput="onNewPersonInput"
+              bindblur="onConfirmPerson" bindconfirm="onConfirmPerson" maxlength="10"/>
+          </view>
+          <view class="tag-add-btn" wx:if="{{!addingPerson}}" catchtap="onShowAddPerson">＋</view>
+        </view>
+      </view>
+
+      <!-- 数值 -->
+      <view class="field" wx:if="{{numericKeys.length > 0}}">
+        <text class="field-label">数值</text>
+        <view class="numeric-list">
+          <view class="numeric-row" wx:for="{{numericKeys}}" wx:key="*this" wx:for-item="k">
+            <text class="numeric-key">{{k}}</text>
+            <text class="numeric-val" bindtap="onEditNumeric" data-key="{{k}}">{{editValues.numericInfo[k] || '点击设置'}}</text>
+            <view class="numeric-del" catchtap="onDeleteNumeric" data-key="{{k}}">×</view>
+          </view>
+        </view>
+        <text class="tag-add" bindtap="onAddNumeric">＋ 添加数值</text>
+      </view>
+
+      <!-- 状态 -->
+      <view class="field">
+        <text class="field-label">状态</text>
+        <view class="status-options">
+          <view class="status-opt {{editValues.status === '待办' ? 'active' : ''}}" data-status="待办" bindtap="onSelectStatus">
+            <text>待办</text>
+          </view>
+          <view class="status-opt {{editValues.status === '已完成' ? 'active' : ''}}" data-status="已完成" bindtap="onSelectStatus">
+            <text>已完成</text>
+          </view>
+          <view class="status-opt {{editValues.status === '待跟进' ? 'active' : ''}}" data-status="待跟进" bindtap="onSelectStatus">
+            <text>待跟进</text>
+          </view>
+          <view class="status-opt {{!editValues.status ? 'active' : ''}}" data-status="" bindtap="onSelectStatus">
+            <text>无</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 心情 -->
+      <view class="field">
+        <text class="field-label">心情</text>
+        <view class="mood-edit-row">
+          <view class="mood-display {{editing.mood ? 'editing' : ''}}" bindtap="onEditMood" wx:if="{{!editing.mood}}">
+            <view class="mood-dot mood-tone-{{editValues.mood.tone || 'neutral'}}"></view>
+            <text class="mood-label-text">{{editValues.mood.label || '点击记录心情'}}</text>
+          </view>
+          <view class="mood-edit-inline" wx:if="{{editing.mood}}">
+            <input
+              class="mood-input field-input"
+              value="{{editValues.mood.label}}"
+              placeholder="此刻心情…"
+              focus="{{editing.mood}}"
+              bindinput="onMoodLabelInput"
+              bindblur="onMoodBlur"
+              bindconfirm="onMoodBlur"
+              maxlength="20"
+            />
+            <view class="mood-tone-picker">
+              <view class="mood-tone-opt {{editValues.mood.tone === 'positive' ? 'active' : ''}}" data-tone="positive" catchtap="onSelectMoodTone">
+                <view class="mto-dot tone-positive"></view>
+                <text>正向</text>
+              </view>
+              <view class="mood-tone-opt {{editValues.mood.tone === 'neutral' ? 'active' : ''}}" data-tone="neutral" catchtap="onSelectMoodTone">
+                <view class="mto-dot tone-neutral"></view>
+                <text>中性</text>
+              </view>
+              <view class="mood-tone-opt {{editValues.mood.tone === 'negative' ? 'active' : ''}}" data-tone="negative" catchtap="onSelectMoodTone">
+                <view class="mto-dot tone-negative"></view>
+                <text>负向</text>
+              </view>
+            </view>
+          </view>
+          <view class="mood-clear" wx:if="{{editValues.mood.label && !editing.mood}}" catchtap="onClearMood">×</view>
+        </view>
+      </view>
+
+      <!-- 分组（v5 改为确认态+点击切换，不再平铺所有选项） -->
+      <view class="field">
+        <text class="field-label">分组</text>
+        <view class="group-confirmed" wx:if="{{!editing.group}}">
+          <view class="gc-display {{editValues.groupId ? 'has-group' : 'no-group'}}" bindtap="onToggleGroupEdit">
+            <view class="gcd-dot" wx:if="{{editValues.groupId}}" style="background: {{_selectedGroupColor}}"></view>
+            <text class="gcd-name">{{_selectedGroupName}}</text>
+            <text class="gcd-arrow">▾</text>
+          </view>
+        </view>
+        <view class="group-picker" wx:if="{{editing.group}}">
+          <view
+            class="group-picker-chip {{!editValues.groupId ? 'active' : ''}}"
+            data-group-id=""
+            catchtap="onSelectGroup"
+          >
+            <text>未分组</text>
+          </view>
+          <view
+            class="group-picker-chip {{editValues.groupId === item.id ? 'active' : ''}}"
+            wx:for="{{availableGroups}}"
+            wx:key="id"
+            data-group-id="{{item.id}}"
+            catchtap="onSelectGroup"
+          >
+            <view class="gsc-dot" style="background: {{item.color || '#4A5C7C'}}"></view>
+            <text>{{item.name}}</text>
+          </view>
+          <view class="group-picker-done" catchtap="onToggleGroupEdit">
+            <text>完成</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 置顶开关（v4 新增） -->
+      <view class="field">
+        <view class="pin-toggle" bindtap="onTogglePin">
+          <view class="css-icon-pin pin-icon {{editValues.isPinned ? 'pinned' : ''}}"></view>
+          <text class="pin-label">{{editValues.isPinned ? '已置顶（点击取消）' : '置顶这条记录'}}</text>
+        </view>
+      </view>
+
+      <!-- 提醒设置（Phase 1 新增） -->
+      <view class="field">
+        <text class="field-label">提醒</text>
+        <view class="remind-set-row">
+          <!-- 已设置 → 显示提醒时间 -->
+          <view class="remind-set-display" wx:if="{{editValues.remindAt && !editing.remindAt}}" bindtap="onEditRemindAt">
+            <text class="remind-set-text">{{editValues.remindAt}}</text>
+          </view>
+          <!-- 编辑中 → 日期时间选择器 -->
+          <view class="remind-set-editing" wx:if="{{editing.remindAt}}">
+            <picker mode="date" value="{{editValues.remindDate}}" start="{{todayStr}}" bindchange="onRemindDateChange">
+              <view class="remind-picker-btn">{{editValues.remindDate || '选择日期'}}</view>
+            </picker>
+            <picker mode="time" value="{{editValues.remindTime}}" bindchange="onRemindTimeChange">
+              <view class="remind-picker-btn">{{editValues.remindTime || '选择时间'}}</view>
+            </picker>
+            <view class="remind-confirm-btn" bindtap="onConfirmRemindAt">
+              <text>确定</text>
+            </view>
+            <view class="remind-cancel-btn" bindtap="onCancelRemindEdit">
+              <text>取消</text>
+            </view>
+          </view>
+          <!-- 操作按钮 -->
+          <view class="remind-set-actions">
+            <text class="remind-set-placeholder" wx:if="{{!editValues.remindAt && !editing.remindAt}}" bindtap="onEditRemindAt">设置提醒时间</text>
+            <text class="remind-clear-link" wx:if="{{editValues.remindAt && !editing.remindAt}}" catchtap="onClearRemindAt">清除</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 记录时间 -->
+      <view class="field">
+        <text class="field-label">记录时间</text>
+        <text class="field-value">{{record._timeFull}}</text>
+      </view>
+    </view>
+
+    <!-- 关联记录 -->
+    <view class="related" wx:if="{{record.relatedRecordId}}">
+      <text class="related-text">关联了 1 条记录</text>
+    </view>
+
+    <!-- 重新AI解析 -->
+    <view class="reparse-area">
+      <view class="reparse-btn" bindtap="onReparse" wx:if="{{!reparsing}}">
+        <text>重新AI解析</text>
+      </view>
+      <view class="reparse-btn disabled" wx:if="{{reparsing}}">
+        <text>AI 重新理解中...</text>
+      </view>
+    </view>
+
+    <!-- 底部操作栏 -->
+    <view class="bottom-bar">
+      <view class="save-btn {{saving ? 'saving' : ''}} {{saved ? 'saved' : ''}}" bindtap="onSave">
+        <text wx:if="{{!saving && !saved}}">保存修改</text>
+        <text wx:if="{{saving}}">保存中...</text>
+        <text wx:if="{{saved}}" class="save-check">✓</text>
+      </view>
+      <view class="bottom-actions">
+        <view class="share-btn" bindtap="onShareRecord">
+          <text>分享</text>
+        </view>
+        <view class="delete-btn" bindtap="onDelete">
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

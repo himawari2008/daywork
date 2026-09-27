@@ -1,0 +1,71 @@
+<!--
+活记 · 首次引导 — 对标 Day One onboarding
+3 页滑动卡片，底部跳过/开始按钮
+-->
+<view class="page">
+  <!-- 启动闪屏覆盖层（整合进 onboarding，规避新建页面被依赖分析忽略） -->
+  <view class="splash-mask" wx:if="{{showSplash}}">
+    <image class="splash-mark" src="/images/splash-mark.png" mode="aspectFit"></image>
+    <text class="splash-name">活记</text>
+    <text class="splash-tag">个人 AI 语音工作日记</text>
+    <text class="splash-copy">为家航 © 2026</text>
+  </view>
+
+  <swiper
+    class="swiper"
+    current="{{current}}"
+    indicator-dots="{{true}}"
+    indicator-color="rgba(45,43,40,0.15)"
+    indicator-active-color="#E8815C"
+    autoplay="{{false}}"
+    bindchange="onSwiperChange"
+  >
+    <swiper-item wx:for="{{slides}}" wx:key="title">
+      <view class="slide">
+        <!-- 图标区 -->
+        <view class="icon-wrap" style="background: {{item.color}}15;">
+          <!-- 语音图标 -->
+          <view class="onboard-icon voice-icon" wx:if="{{item.icon === 'voice'}}">
+            <view class="oi-mic"></view>
+            <view class="oi-waves">
+              <view class="oi-wave"></view>
+              <view class="oi-wave"></view>
+              <view class="oi-wave"></view>
+            </view>
+          </view>
+          <!-- AI 图标 -->
+          <view class="onboard-icon ai-icon" wx:if="{{item.icon === 'ai'}}">
+            <view class="oi-brain"></view>
+            <view class="oi-sparkles">
+              <view class="oi-spark"></view>
+              <view class="oi-spark"></view>
+              <view class="oi-spark"></view>
+            </view>
+          </view>
+          <!-- 回顾图标 -->
+          <view class="onboard-icon review-icon" wx:if="{{item.icon === 'review'}}">
+            <view class="oi-book"></view>
+            <view class="oi-pages">
+              <view class="oi-page"></view>
+              <view class="oi-page"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 文字 -->
+        <text class="slide-title">{{item.title}}</text>
+        <text class="slide-desc">{{item.desc}}</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部按钮 -->
+  <view class="bottom">
+    <view class="onboard-skip" bindtap="onSkip">
+      <text>跳过</text>
+    </view>
+    <view class="onboard-next {{isLast ? 'ready' : ''}}" bindtap="onStart">
+      <text>{{isLast ? '开始记录 →' : '下一步'}}</text>
+    </view>
+  </view>
+</view>

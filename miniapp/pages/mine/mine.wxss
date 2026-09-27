@@ -1,0 +1,1157 @@
+/* ========================================
+   活记 v3 · 我的页 — 河床地形图
+   心情河流 + 热力图 + 连续环 + 统计卡
+   呼吸感 · 灵动 · 活
+   零 emoji · CSS 纯图标
+   ======================================== */
+
+.page {
+  padding: 60rpx 40rpx 120rpx;
+  min-height: 100vh;
+}
+
+/* ========================================
+   头部 — 头像 + 连续天数环
+   ======================================== */
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 52rpx;
+}
+
+.avatar-wrap {
+  position: relative;
+  width: 148rpx;
+  height: 148rpx;
+  margin-bottom: 24rpx;
+}
+
+.avatar-ring {
+  width: 148rpx;
+  height: 148rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.8s ease;
+}
+
+.avatar-inner {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CSS 用户头像图标 */
+.profile-avatar-icon {
+  width: 52rpx;
+  height: 52rpx;
+  border-color: var(--accent-ring);
+}
+.profile-avatar-icon::after {
+  width: 20rpx;
+  height: 20rpx;
+  background: var(--accent);
+  top: 10rpx;
+}
+
+.nickname {
+  font-size: 34rpx;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.streak-info {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 10rpx;
+}
+
+.streak-days,
+.streak-cur {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+.streak-div {
+  color: var(--ink-faint);
+}
+
+.streak-num {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ========================================
+   统计三卡 — 更多呼吸空间
+   ======================================== */
+
+.stat-cards {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 56rpx;
+}
+
+.stat-card {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 32rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.03);
+}
+
+.stat-num {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  margin-top: 8rpx;
+}
+
+/* ========================================
+   区域标题 — 更轻的视觉重量
+   ======================================== */
+
+.section { margin-bottom: 52rpx; }
+
+.section-title {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  letter-spacing: 1rpx;
+  display: block;
+  margin-bottom: 24rpx;
+  font-weight: 400;
+}
+
+/* ========================================
+   热力图日历
+   ======================================== */
+
+.heatmap-wrap {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.02);
+}
+
+.heatmap-months {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14rpx;
+  padding-left: 28rpx;
+}
+
+.heat-month {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+  flex: 1;
+  text-align: center;
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 5rpx;
+}
+
+.heatmap-weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 5rpx;
+  margin-right: 10rpx;
+  justify-content: space-around;
+}
+
+.heat-wd {
+  font-size: 16rpx;
+  color: var(--ink-faint);
+  line-height: 26rpx;
+  height: 26rpx;
+  display: flex;
+  align-items: center;
+}
+
+.heatmap-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5rpx;
+  flex: 1;
+  align-content: flex-start;
+}
+
+.heat-cell {
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 5rpx;
+  background: var(--heat-0);
+}
+
+.heat-cell-1 { background: var(--heat-1); }
+.heat-cell-2 { background: var(--heat-2); }
+.heat-cell-3 { background: var(--heat-3); }
+.heat-cell-4 { background: var(--heat-4); }
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5rpx;
+  margin-top: 18rpx;
+}
+
+.heat-legend-label {
+  font-size: 18rpx;
+  color: var(--ink-faint);
+  margin: 0 8rpx;
+}
+
+/* ========================================
+   状态分布条
+   ======================================== */
+
+.status-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.bar-label {
+  font-size: 26rpx;
+  color: var(--ink);
+  width: 84rpx;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 14rpx;
+  border-radius: 7rpx;
+  background: var(--divider);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 7rpx;
+  transition: width 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.bar-done     { background: var(--done); }
+.bar-pending  { background: var(--pending); }
+.bar-followup { background: var(--followup); }
+.bar-none,
+.bar-null     { background: #D5D0CB; }
+
+.bar-pct {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  width: 56rpx;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========================================
+   心情河流（v5 新增）
+   ======================================== */
+
+.mood-river-wrap {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.02);
+  overflow-x: auto;
+}
+
+.mood-river-track {
+  display: flex;
+  gap: 16rpx;
+  justify-content: space-around;
+  min-width: 100%;
+}
+
+.mood-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  min-width: 80rpx;
+}
+
+.mood-day-dot {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+}
+
+/* 心情色调（开放式，按情绪色调着色） */
+.mood-tone-positive { background: #6EA880; }
+.mood-tone-negative { background: #D08070; }
+.mood-tone-neutral { background: #B8B0A8; }
+
+.mood-day-date {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.mood-day-label {
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.mood-day-count {
+  font-size: 18rpx;
+  color: var(--ink-faint);
+}
+
+.mood-river-empty {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 48rpx 32rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.02);
+  font-size: 26rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   标签云
+   ======================================== */
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx 20rpx;
+  align-items: baseline;
+  line-height: 1.7;
+}
+
+.cloud-tag { font-weight: 500; }
+
+/* ========================================
+   人物列表
+   ======================================== */
+
+.people-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.person-item {
+  font-size: 26rpx;
+  color: var(--pending);
+  background: #FDF6ED;
+  padding: 12rpx 22rpx;
+  border-radius: 18rpx;
+}
+
+/* ========================================
+   分组管理（v4 新增）
+   ======================================== */
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.section-action {
+  font-size: 24rpx;
+  color: var(--accent);
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  background: var(--accent-bg);
+}
+
+.group-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.gm-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 16rpx;
+  border-radius: 16rpx;
+  transition: background 0.15s;
+}
+.gm-item:active {
+  background: var(--divider);
+}
+.gm-left {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  flex: 1;
+  min-width: 0;
+}
+.gm-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gm-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+.gm-name {
+  font-size: 28rpx;
+  color: var(--ink);
+  font-weight: 500;
+}
+.gm-desc {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+}
+.gm-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.gm-count {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.gm-pin {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+.gm-pin.active {
+  opacity: 1;
+}
+.gm-del {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  border-radius: 50%;
+  letter-spacing: 2rpx;
+}
+.gm-empty {
+  padding: 32rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   AI 周报 — CSS 星光图标
+   ======================================== */
+
+.summary-card {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.02);
+}
+
+.summary-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx 0;
+}
+
+/* 星光图标 */
+.se-spark {
+  margin-bottom: 8rpx;
+}
+
+.se-desc {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+
+.se-btn {
+  padding: 18rpx 36rpx;
+  border-radius: 22rpx;
+  background: var(--accent-bg);
+  transition: background 150ms;
+}
+.se-btn:active { background: var(--accent-ring); }
+
+.se-btn text {
+  font-size: 28rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.summary-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18rpx;
+  padding: 48rpx 0;
+}
+
+.sl-text {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+
+.summary-result {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.sr-text {
+  font-size: 28rpx;
+  line-height: 1.75;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.sr-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sra-btn {
+  font-size: 24rpx;
+  color: var(--brand);
+  padding: 10rpx 20rpx;
+  border-radius: 12rpx;
+  background: #EEF0F6;
+}
+
+.sra-period {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   隐私与安全（v6 新增）
+   ======================================== */
+
+.privacy-card {
+  background: var(--surface);
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 14rpx rgba(0,0,0,0.02);
+}
+
+.privacy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid var(--divider);
+  transition: background 0.15s;
+}
+.privacy-row:last-child {
+  border-bottom: none;
+}
+.privacy-row:active {
+  background: var(--divider);
+}
+
+.privacy-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.privacy-label {
+  font-size: 28rpx;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.privacy-desc {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+.privacy-arrow {
+  font-size: 28rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   设置区
+   ======================================== */
+
+.settings {
+  margin-top: 24rpx;
+  border-top: 1rpx solid var(--divider);
+  padding-top: 32rpx;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22rpx 0;
+}
+
+.setting-last {
+  border-top: 1rpx solid var(--divider);
+}
+
+.setting-label {
+  font-size: 28rpx;
+  color: var(--ink);
+}
+
+.setting-hint {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   加载
+   ======================================== */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 300rpx;
+  gap: 18rpx;
+}
+
+
+.loading-text {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+
+/* ========================================
+   往年今日 + 随机回顾（从 review tab 合并）
+   ======================================== */
+
+.on-this-day {
+  background: linear-gradient(135deg, #FDF8F0, #FFF9ED);
+  border: 1rpx solid #ECD9B0;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.otd-item {
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid rgba(236, 217, 176, 0.5);
+  transition: background 0.15s;
+}
+.otd-item:last-of-type { border-bottom: none; }
+.otd-item:active { background: rgba(236, 217, 176, 0.2); }
+
+.otd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.otd-year {
+  font-size: 22rpx;
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(232,129,92,0.1);
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+}
+
+.otd-mood {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.otd-mood-text {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+.otd-summary {
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.5;
+  display: block;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.otd-tags {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 10rpx;
+  flex-wrap: wrap;
+}
+
+.otd-tag {
+  font-size: 20rpx;
+  color: var(--brand);
+  background: rgba(74,92,124,0.08);
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+}
+
+.otd-shuffle {
+  padding: 20rpx 0;
+  display: flex;
+  justify-content: center;
+}
+.otd-shuffle text {
+  font-size: 24rpx;
+  color: var(--accent);
+  padding: 10rpx 24rpx;
+  border-radius: 20rpx;
+  background: rgba(232,129,92,0.08);
+}
+.otd-shuffle:active text { background: rgba(232,129,92,0.15); }
+
+.otd-empty {
+  padding: 56rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+.otd-empty-title { font-size: 26rpx; color: var(--ink-soft); }
+.otd-empty-desc { font-size: 22rpx; color: var(--ink-faint); }
+
+/* 骨架屏 */
+.otd-skeleton {
+  padding: 32rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.skeleton-line {
+  height: 16rpx;
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, #F0EDE5 25%, #E8E4DA 50%, #F0EDE5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w80 { width: 80%; }
+.skeleton-line.w40 { width: 40%; }
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 随机回顾 */
+.flashback-card {
+  background: linear-gradient(135deg, #F3F0F4, #F6F2F7);
+  border: 1rpx solid #D8D0DE;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.fb-inner {
+  padding: 24rpx 28rpx;
+  transition: background 0.15s;
+}
+.fb-inner:active { background: rgba(180, 160, 190, 0.08); }
+
+.fb-badge {
+  display: inline-block;
+  font-size: 22rpx;
+  color: #7B6EA8;
+  background: rgba(123,110,168,0.1);
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+}
+
+.fb-date {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  margin-left: 10rpx;
+}
+
+.fb-summary {
+  display: block;
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-top: 8rpx;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.fb-meta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 12rpx;
+  flex-wrap: wrap;
+}
+
+.fb-mood {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+}
+
+.fb-tags {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+}
+
+.fb-actions {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 28rpx 20rpx;
+}
+
+.fb-action-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: var(--brand);
+  background: rgba(74,92,124,0.06);
+}
+.fb-action-btn:active { background: rgba(74,92,124,0.12); }
+
+.flashback-empty {
+  background: var(--surface);
+  border-radius: 20rpx;
+  padding: 48rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-faint);
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.03);
+}
+
+/* ============================================
+   借支管理入口
+   ============================================ */
+.loan-entry-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 24rpx;
+  background: linear-gradient(135deg, #FFF9F0, #FFF3E8);
+  border: 1rpx solid #F0DCC8;
+  border-radius: 20rpx;
+}
+
+.loan-entry-row:active {
+  opacity: 0.85;
+}
+
+.loan-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.loan-entry-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8A860, #D48848);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.css-icon-loan::before {
+  content: '';
+  width: 4rpx;
+  height: 24rpx;
+  background: #fff;
+  border-radius: 2rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.css-icon-loan::after {
+  content: '';
+  width: 18rpx;
+  height: 4rpx;
+  background: #fff;
+  border-radius: 2rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loan-entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.loan-entry-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #8B5E3C;
+}
+
+.loan-entry-sub {
+  font-size: 24rpx;
+  color: #B8956E;
+}
+
+.loan-entry-arrow {
+  font-size: 28rpx;
+  color: #C8A87C;
+}
+
+/* Dark theme for loan entry */
+.theme-dark .loan-entry-row {
+  background: linear-gradient(135deg, #2A2418, #2E2418);
+  border-color: #3D3224;
+}
+
+.theme-dark .loan-entry-title {
+  color: #D4B88C;
+}
+
+.theme-dark .loan-entry-sub {
+  color: #8C7A5E;
+}
+
+/* Card entry (different color) */
+.card-entry-row {
+  background: linear-gradient(135deg, #F5F0FA, #F0E8FA) !important;
+  border-color: #D8CCE8 !important;
+}
+
+.card-entry-icon {
+  background: linear-gradient(135deg, #8B7EC8, #6E5FB8) !important;
+}
+
+.card-entry-title {
+  color: #5B3E8C !important;
+}
+
+.theme-dark .card-entry-row {
+  background: linear-gradient(135deg, #241E2E, #2A1E3A) !important;
+  border-color: #3D2E4E !important;
+}
+
+.theme-dark .card-entry-title {
+  color: #B8A0D8 !important;
+}
+
+/* Card icon */
+.css-icon-card {
+  position: relative;
+}
+
+.css-icon-card::before {
+  content: '';
+  width: 20rpx;
+  height: 16rpx;
+  border: 4rpx solid #fff;
+  border-radius: 4rpx;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+/* ============================================
+   深色主题 — 卡片渐变体系
+   设计原则：每个区块有独特但协调的暗色渐变
+   暖金(借支) · 紫雾(名片) · 琥珀(往年) · 薰衣草(回顾)
+   蓝墨(周报) · 青灰(热力) · 暮紫(心情) · 墨绿(统计)
+   ============================================ */
+
+/* —— 往年今日 → 琥珀暖调 —— */
+.theme-dark .on-this-day {
+  background: linear-gradient(135deg, #2A2418, #2E2218);
+  border-color: #3D3024;
+}
+.theme-dark .otd-item:active {
+  background: rgba(200, 160, 80, 0.08);
+}
+.theme-dark .otd-year {
+  color: #D4A860;
+  background: rgba(212, 168, 96, 0.12);
+}
+.theme-dark .otd-mood-text {
+  color: #9C8C78;
+}
+.theme-dark .otd-tag {
+  color: #B8A080;
+  background: rgba(180, 160, 128, 0.12);
+}
+.theme-dark .otd-shuffle text {
+  color: #D4A860;
+  background: rgba(212, 168, 96, 0.12);
+}
+.theme-dark .otd-empty-title { color: #A09888; }
+.theme-dark .otd-empty-desc { color: #706858; }
+.theme-dark .skeleton-line {
+  background: linear-gradient(90deg, #2E2818 25%, #3D3420 50%, #2E2818 75%);
+}
+
+/* —— 随机回顾 → 薰衣草紫调 —— */
+.theme-dark .flashback-card {
+  background: linear-gradient(135deg, #241E2E, #2A1E36);
+  border-color: #3D2E4E;
+}
+.theme-dark .fb-inner:active {
+  background: rgba(140, 120, 180, 0.08);
+}
+.theme-dark .fb-badge {
+  color: #A088C8;
+  background: rgba(160, 136, 200, 0.12);
+}
+.theme-dark .fb-date { color: #9088A0; }
+.theme-dark .fb-tags { color: #8878A0; }
+.theme-dark .fb-action-btn {
+  color: #A090C8;
+  background: rgba(140, 120, 180, 0.08);
+}
+.theme-dark .flashback-empty {
+  background: #252528;
+  color: #888490;
+}
+
+/* —— AI 周报 → 蓝墨调 —— */
+.theme-dark .summary-card {
+  background: linear-gradient(135deg, #1E222C, #212636);
+  border: 1rpx solid #2A3040;
+}
+.theme-dark .se-desc { color: #8890A8; }
+.theme-dark .se-btn {
+  background: rgba(120, 140, 200, 0.1);
+}
+.theme-dark .se-btn text { color: #90A0D0; }
+.theme-dark .sra-btn {
+  color: #90A0D0;
+  background: rgba(120, 140, 200, 0.08);
+}
+.theme-dark .sl-text { color: #7880A0; }
+
+/* —— 热力图 → 青灰调 —— */
+.theme-dark .heatmap-wrap {
+  background: linear-gradient(135deg, #1E2420, #212820);
+  border: 1rpx solid #2A342A;
+}
+.theme-dark .heat-month { color: #789078; }
+
+/* —— 心情河流 → 暮紫调 —— */
+.theme-dark .mood-river-wrap {
+  background: linear-gradient(135deg, #221E26, #241E2A);
+  border: 1rpx solid #322A3A;
+}
+.theme-dark .mood-river-empty {
+  background: #252528;
+  color: #888490;
+}
+
+/* —— 统计三卡 → 墨绿调 —— */
+.theme-dark .stat-card {
+  background: linear-gradient(135deg, #1E2422, #212824);
+  border: 1rpx solid #2A3630;
+  box-shadow: none;
+}
+.theme-dark .stat-num { color: #C8D8D0; }
+
+/* —— 隐私卡 → 深 slate 调 —— */
+.theme-dark .privacy-card {
+  background: linear-gradient(135deg, #202228, #242830);
+  border: 1rpx solid #2E3240;
+  box-shadow: none;
+}
+.theme-dark .privacy-row {
+  border-bottom-color: rgba(255,255,255,0.04);
+}
+.theme-dark .privacy-row:active {
+  background: rgba(255,255,255,0.03);
+}
+
+/* —— 人物标签 —— */
+.theme-dark .person-item {
+  color: #D4B88C;
+  background: rgba(200, 160, 100, 0.1);
+}
+
+/* —— 分组管理列表项 hover —— */
+.theme-dark .gm-item:active {
+  background: rgba(255,255,255,0.03);
+}
+
+/* —— 设置区 —— */
+.theme-dark .settings {
+  border-top-color: rgba(255,255,255,0.06);
+}
+
+/* ============ 河床地形图（时间沉积）============ */
+.riverbed {
+  position: relative;
+  margin: 8rpx 24rpx 24rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.riverbed-img {
+  display: block;
+  width: 100%;
+}
+.riverbed-caption {
+  position: absolute;
+  left: 28rpx;
+  bottom: 22rpx;
+  display: flex;
+  flex-direction: column;
+}
+.riverbed-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.25);
+}
+.riverbed-sub {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.25);
+}

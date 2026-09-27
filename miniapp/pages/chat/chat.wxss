@@ -1,0 +1,454 @@
+/* ========================================
+   活记 v3 · AI 对话页 — 问
+   呼吸感 · 灵动 · 活
+   CSS 纯图标 · 零 emoji
+   ======================================== */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ========================================
+   顶栏 — 清除按钮
+   ======================================== */
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 32rpx;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1rpx solid var(--divider);
+}
+.chat-header-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+.chat-clear-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  background: rgba(0,0,0,0.05);
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+.chat-clear-btn:active {
+  background: rgba(0,0,0,0.1);
+}
+
+/* ========================================
+   消息列表 — 呼吸留白
+   ======================================== */
+
+.msg-list {
+  flex: 1;
+  height: 0;
+  padding: 24rpx 0;   /* 横向留白下移到各行，规避 scroll-view 右侧 padding 失效导致头像溢出被裁 */
+  overflow-x: hidden;
+}
+
+/* ========================================
+   欢迎区 — 大留白 + CSS AI 图标
+   （快捷提问已移至输入框上方 .qq-bar）
+   ======================================== */
+
+.quick-questions {
+  padding: 40rpx 32rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.qq-ai-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 18rpx;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+  box-shadow: var(--shadow-card);
+}
+
+/* 缩小的 AI 图标 — 不再占半屏 */
+.qq-ai-pulse {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 10rpx;
+}
+.qq-ai-pulse::after {
+  width: 10rpx;
+  height: 10rpx;
+}
+
+.qq-title {
+  font-size: 26rpx;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.qq-sub {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  margin-top: 2rpx;
+}
+
+/* ========================================
+   消息行 — 更多呼吸空间
+   ======================================== */
+
+.msg-row {
+  display: flex;
+  margin-bottom: 32rpx;
+  gap: 16rpx;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 32rpx;   /* 横向留白落到行自身：普通 view 的 padding 正常生效，头像不会越过屏幕右缘 */
+}
+
+/* AI 消息靠左，用户消息靠右 —— 显式对齐，双保险防止右侧头像被挤出屏幕 */
+.msg-ai {
+  justify-content: flex-start;
+}
+.msg-self {
+  justify-content: flex-end;
+}
+
+/* ========================================
+   头像 — CSS 纯图标
+   ======================================== */
+
+.msg-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.msg-avatar-ai {
+  background: var(--accent-bg);
+}
+
+.msg-avatar-user {
+  background: var(--surface-sunken);
+  border-radius: 50%;
+}
+
+/* 占位头像 — 弹性占位：吸收整行剩余空间，把气泡+头像顶到对应一侧
+   （用户消息推到右侧、AI 消息填充右侧留白），避免右侧头像被屏幕裁掉 */
+.msg-avatar-spacer {
+  visibility: hidden;
+  width: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.avatar-ai-inner {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 12rpx;
+}
+.avatar-ai-inner::after {
+  width: 10rpx;
+  height: 10rpx;
+}
+
+.thinking-pulse::after {
+  animation: icon-pulse 1.2s ease-in-out infinite;
+}
+
+.avatar-user-inner {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  border-color: var(--ink-faint);
+}
+
+/* ========================================
+   气泡 — 呼吸圆角
+   ======================================== */
+
+.msg-bubble {
+  max-width: 72%;
+  padding: 22rpx 28rpx;
+  border-radius: 20rpx;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.bubble-ai {
+  background: var(--surface);
+  border-top-left-radius: 6rpx;
+  box-shadow: var(--shadow-card);
+}
+
+.bubble-self {
+  background: #A8E6B5; /* 更柔和的绿色 — 不刺眼 */
+  border-top-right-radius: 6rpx;
+}
+
+.bubble-text {
+  font-size: 30rpx;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.bubble-self .bubble-text {
+  color: #1A2E1A;
+}
+
+.bubble-time {
+  font-size: 20rpx;
+  color: var(--ink-faint);
+  display: block;
+  text-align: right;
+  margin-top: 8rpx;
+}
+
+.bubble-self .bubble-time {
+  color: rgba(26, 46, 26, 0.4);
+}
+
+/* AI 生成合规角标（仅 AI 气泡） */
+.bubble-ai-badge {
+  display: inline-block;
+  margin-top: 6rpx;
+}
+
+/* ========================================
+   相关记录卡片 — AI 回答内的可点击条目
+   ======================================== */
+.relevant-cards {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  border-top: 1rpx solid var(--divider);
+  padding-top: 16rpx;
+}
+
+.relevant-card {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 14rpx 16rpx;
+  background: var(--surface);
+  border-radius: 12rpx;
+  transition: all 0.15s;
+  min-width: 0;
+  overflow: hidden;
+}
+.relevant-card:active {
+  background: #EFECE6;
+  transform: scale(0.98);
+}
+
+.rc-status-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #D0D0CC;
+}
+.rc-status-dot.pending { background: #E8815C; }
+.rc-status-dot.done { background: #6EA880; }
+
+.rc-summary {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--ink);
+  line-height: 1.4;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
+
+.rc-arrow {
+  font-size: 22rpx;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   AI 思考动画 — 灵动脉动
+   ======================================== */
+
+.bubble-thinking {
+  padding: 30rpx 44rpx;
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+}
+
+.t-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.4;
+  animation: think-bounce 1.3s ease-in-out infinite;
+}
+
+.t-dot:nth-child(2) { animation-delay: 0.18s; }
+.t-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes think-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-16rpx); opacity: 1; }
+}
+
+/* ========================================
+   快捷提问 chips — 输入框正上方常驻
+   点按发送 · 长按编辑/删除 · 虚线+号自定义
+   ======================================== */
+
+.qq-bar {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1rpx solid var(--divider);
+  white-space: nowrap;
+}
+
+.qq-bar-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 16rpx 28rpx 4rpx;
+}
+
+.qq-chip {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--brand);
+  background: var(--surface);
+  padding: 14rpx 26rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  transition: all 150ms;
+}
+.qq-chip:active {
+  background: var(--surface-sunken);
+  transform: scale(0.95);
+}
+
+/* 自定义(+) chip — 虚线弱化，不抢主 chips 视觉 */
+.qq-chip-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  color: var(--ink-faint);
+  background: transparent;
+  box-shadow: none;
+  border: 1rpx dashed #CFC9C0;
+}
+
+/* CSS 加号 — 零 emoji */
+.qq-add-icon {
+  width: 20rpx;
+  height: 20rpx;
+  position: relative;
+}
+.qq-add-icon::before,
+.qq-add-icon::after {
+  content: '';
+  position: absolute;
+  background: var(--ink-faint);
+  border-radius: 2rpx;
+}
+.qq-add-icon::before {
+  left: 50%;
+  top: 0;
+  width: 3rpx;
+  height: 100%;
+  transform: translateX(-50%);
+}
+.qq-add-icon::after {
+  top: 50%;
+  left: 0;
+  height: 3rpx;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+/* ========================================
+   底部输入栏 — 通透圆润
+   ======================================== */
+
+.input-bar {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 28rpx;
+  padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
+  background: var(--surface);
+  gap: 16rpx;
+}
+
+.input-wrap {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 24rpx;
+  padding: 18rpx 24rpx;
+  box-shadow: var(--shadow-card);
+}
+
+.chat-input {
+  font-size: 30rpx;
+  color: var(--ink);
+  line-height: 1.4;
+  width: 100%;
+}
+
+/* 发送按钮 — CSS 箭头 */
+.send-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #E7E3DC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 180ms, transform 120ms;
+}
+.send-btn:active {
+  transform: scale(0.93);
+}
+
+.send-active {
+  background: var(--accent);
+}
+.send-active:active {
+  background: var(--accent-dim);
+}
+
+/* 发送箭头颜色跟随按钮状态 */
+.chat-send-arrow {
+  border-top-color: var(--ink-faint);
+  border-right-color: var(--ink-faint);
+}
+.send-active .chat-send-arrow {
+  border-top-color: #fff;
+  border-right-color: #fff;
+}

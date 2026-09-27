@@ -1,0 +1,122 @@
+<!--
+活记 v3 · AI 对话页 — 问
+呼吸感 · 灵动 · 活
+CSS 纯图标 · 零 emoji
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <!-- 顶栏 — 清除按钮 -->
+  <view class="chat-header" wx:if="{{messages.length > 0}}">
+    <text class="chat-header-title">AI 对话</text>
+    <view class="chat-clear-btn" bindtap="onClearChat">
+      <text>清除对话</text>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view class="msg-list" scroll-y scroll-into-view="{{_scrollToView}}" scroll-with-animation>
+    <!-- 欢迎区 — 大留白（快捷提问已移到输入框上方常驻） -->
+    <view class="quick-questions" wx:if="{{messages.length <= 1 && !thinking}}">
+      <view class="qq-ai-icon">
+        <view class="css-icon-ai qq-ai-pulse"></view>
+      </view>
+      <text class="qq-title">我是活记 AI，基于你的记录回答问题</text>
+      <text class="qq-sub">点下方快捷词提问 · 长按可编辑</text>
+    </view>
+
+    <!-- 消息气泡 -->
+    <view
+      class="msg-row {{item.role === 'user' ? 'msg-self' : 'msg-ai'}}"
+      wx:for="{{messages}}"
+      wx:key="index"
+      id="msg-{{index}}"
+      data-index="{{index}}"
+      bindlongpress="onLongPressMsg"
+    >
+      <!-- 左侧：AI 头像 / 占位 -->
+      <view class="msg-avatar msg-avatar-ai" wx:if="{{item.role === 'ai'}}">
+        <view class="css-icon-ai avatar-ai-inner"></view>
+      </view>
+      <view class="msg-avatar msg-avatar-spacer" wx:else></view>
+
+      <!-- 气泡 -->
+      <view class="msg-bubble {{item.role === 'user' ? 'bubble-self' : 'bubble-ai'}}">
+        <view class="bubble-text">{{item.content}}</view>
+        <!-- 相关记录卡片（可点击跳转详情） -->
+        <view class="relevant-cards" wx:if="{{item.role === 'ai' && item.relevantRecords && item.relevantRecords.length > 0}}">
+          <view
+            class="relevant-card"
+            wx:for="{{item.relevantRecords}}"
+            wx:key="id"
+            wx:for-item="rec"
+            data-id="{{rec.id}}"
+            bindtap="onTapRelevantRecord"
+          >
+            <view class="rc-status-dot {{rec.status === '已完成' ? 'done' : rec.status === '待办' ? 'pending' : ''}}"></view>
+            <view class="rc-summary">{{rec.summary}}</view>
+            <text class="rc-arrow">▸</text>
+          </view>
+        </view>
+        <text class="bubble-time">{{item.time}}</text>
+        <text class="ai-gen-badge bubble-ai-badge" wx:if="{{item.role === 'ai'}}">AI 生成</text>
+      </view>
+
+      <!-- 右侧：用户头像 / 占位 -->
+      <view class="msg-avatar msg-avatar-user" wx:if="{{item.role === 'user'}}">
+        <view class="css-icon-user avatar-user-inner"></view>
+      </view>
+      <view class="msg-avatar msg-avatar-spacer" wx:else></view>
+    </view>
+
+    <!-- AI 思考中 — 灵动脉动 -->
+    <view class="msg-row msg-ai" wx:if="{{thinking}}">
+      <view class="msg-avatar msg-avatar-ai">
+        <view class="css-icon-ai avatar-ai-inner thinking-pulse"></view>
+      </view>
+      <view class="msg-bubble bubble-ai bubble-thinking">
+        <view class="thinking-dots">
+          <view class="t-dot"></view>
+          <view class="t-dot"></view>
+          <view class="t-dot"></view>
+        </view>
+      </view>
+      <view class="msg-avatar msg-avatar-spacer"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 快捷提问 chips — 输入框正上方，横向滑动常驻 -->
+  <scroll-view class="qq-bar" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="qq-bar-inner">
+      <text
+        class="qq-chip"
+        wx:for="{{quickQuestions}}"
+        wx:key="*this"
+        data-question="{{item}}"
+        data-index="{{index}}"
+        bindtap="onQuickQuestion"
+        bindlongpress="onQuickQuestionLongPress"
+      >{{item}}</text>
+      <view class="qq-chip qq-chip-add" bindtap="onAddQuickQuestion">
+        <view class="qq-add-icon"></view>
+        <text>自定义</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部输入栏 -->
+  <view class="input-bar">
+    <view class="input-wrap">
+      <input
+        class="chat-input"
+        value="{{inputText}}"
+        placeholder="问我任何关于记录的问题..."
+        bindinput="onInputChange"
+        confirm-type="send"
+        bindconfirm="onSend"
+        disabled="{{thinking}}"
+      />
+    </view>
+    <view class="send-btn {{inputText ? 'send-active' : ''}}" bindtap="onSend">
+      <view class="css-icon-send chat-send-arrow"></view>
+    </view>
+  </view>
+</view>

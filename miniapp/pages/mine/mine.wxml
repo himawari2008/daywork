@@ -1,0 +1,388 @@
+<!--
+活记 v3 · 我的页 — 河床地形图
+呼吸感 · 灵动 · 活
+CSS 纯图标 · 零 emoji
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loader-eq">
+      <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+      <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+      <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+      <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+      <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+      <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+      <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+    </view>
+    <text class="loading-text">加载洞察...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <!-- ============ 头部 — 头像 + 连续环 ============ -->
+    <view class="profile">
+      <view class="avatar-wrap">
+        <view class="avatar-ring" style="background: conic-gradient(var(--accent) {{streakPercent}}deg, var(--divider) {{streakPercent}}deg)">
+          <view class="avatar-inner">
+            <!-- CSS 用户图标替代 emoji -->
+            <view class="css-icon-user profile-avatar-icon"></view>
+          </view>
+        </view>
+      </view>
+      <text class="nickname">活记用户</text>
+      <view class="streak-info">
+        <text class="streak-days">已记录 <text class="streak-num">{{stats.days || 0}}</text> 天</text>
+        <text class="streak-div">·</text>
+        <text class="streak-cur">连续 <text class="streak-num">{{stats.streak || 0}}</text> 天</text>
+      </view>
+    </view>
+
+    <!-- ============ 河床地形图（时间沉积）============ -->
+    <view class="riverbed">
+      <image class="riverbed-img" src="/images/riverbed.png" mode="widthFix"/>
+      <view class="riverbed-caption">
+        <text class="riverbed-title">我的河床</text>
+        <text class="riverbed-sub">时间河流，沉淀成河床</text>
+      </view>
+    </view>
+
+    <!-- ============ 统计三卡 ============ -->
+    <view class="stat-cards">
+      <view class="stat-card">
+        <text class="stat-num">{{stats.total || 0}}</text>
+        <text class="stat-label">总记录</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-num">{{stats.monthCount || 0}}</text>
+        <text class="stat-label">本月</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-num">{{stats.weekCount || 0}}</text>
+        <text class="stat-label">本周</text>
+      </view>
+    </view>
+
+    <!-- ============ 往年今日 ============ -->
+    <view class="section">
+      <text class="section-title">往年今日</text>
+      <view class="on-this-day">
+        <view class="otd-skeleton" wx:if="{{onThisDay.loading}}">
+          <view class="skeleton-line w60"></view>
+          <view class="skeleton-line w80"></view>
+          <view class="skeleton-line w40"></view>
+        </view>
+        <block wx:elif="{{onThisDay.records.length > 0}}">
+          <view class="otd-item" wx:for="{{onThisDay.records}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapReviewRecord">
+            <view class="otd-header">
+              <text class="otd-year">{{item._yearLabel}}</text>
+              <view class="otd-mood" wx:if="{{item._moodLabel}}">
+                <view class="mood-dot mood-tone-{{item._moodToneClass}}"></view>
+                <text class="otd-mood-text">{{item._moodLabel}}</text>
+              </view>
+            </view>
+            <text class="otd-summary">{{item.summary || item.content}}</text>
+            <view class="otd-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+              <text class="otd-tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="t">{{t}}</text>
+            </view>
+          </view>
+          <view class="otd-shuffle" bindtap="onShuffleOnThisDay">
+            <text>换一天看看</text>
+          </view>
+        </block>
+        <view class="otd-empty" wx:else>
+          <text class="otd-empty-title">这天还没有记忆</text>
+          <text class="otd-empty-desc">去记录吧，明年今日会充满回忆</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 随机回顾 ============ -->
+    <view class="section" wx:if="{{!flashback.loading || flashback.record}}">
+      <text class="section-title">随机回顾</text>
+      <view class="flashback-card" wx:if="{{flashback.record}}">
+        <view class="fb-inner" data-id="{{flashback.record.id}}" bindtap="onTapReviewRecord">
+          <view class="fb-badge">随机闪现</view>
+          <text class="fb-date">{{flashback.record._dateLabel}}</text>
+          <text class="fb-summary">{{flashback.record.summary || flashback.record.content}}</text>
+          <view class="fb-meta" wx:if="{{flashback.record._moodLabel || (flashback.record.tags && flashback.record.tags.length > 0)}}">
+            <view class="fb-mood" wx:if="{{flashback.record._moodLabel}}">
+              <view class="mood-dot mood-tone-{{flashback.record._moodToneClass}}"></view>
+              <text>{{flashback.record._moodLabel}}</text>
+            </view>
+            <text class="fb-tags" wx:if="{{flashback.record.tags && flashback.record.tags.length > 0}}">{{flashback.record.tags.join(' · ')}}</text>
+          </view>
+        </view>
+        <view class="fb-actions">
+          <view class="fb-action-btn" catchtap="onShuffleFlashback">
+            <text>换一条</text>
+          </view>
+          <view class="fb-action-btn" catchtap="onDismissFlashback">
+            <text>关闭</text>
+          </view>
+        </view>
+      </view>
+      <view class="flashback-empty" wx:if="{{!flashback.record && !flashback.loading}}">
+        <text>暂无历史记录可供回顾</text>
+      </view>
+    </view>
+
+    <!-- ============ 分组管理（v4 新增）============ -->
+    <view class="section">
+      <view class="section-title-row">
+        <text class="section-title">分组管理</text>
+        <text class="section-action" bindtap="onNewGroupFromMine">＋ 新建</text>
+      </view>
+      <view class="group-manage-list">
+        <view class="gm-item" wx:for="{{mineGroups}}" wx:key="id">
+          <view class="gm-left">
+            <view class="gm-dot" style="background: {{item.color || '#4A5C7C'}}"></view>
+            <view class="gm-info">
+              <text class="gm-name">{{item.name}}</text>
+              <text class="gm-desc" wx:if="{{item.description}}">{{item.description}}</text>
+            </view>
+          </view>
+          <view class="gm-right">
+            <text class="gm-count">{{item.recordCount || 0}} 条</text>
+            <view class="gm-pin {{item.isPinned ? 'active' : ''}}" data-id="{{item.id}}" data-pinned="{{item.isPinned}}" catchtap="onToggleGroupPin">
+              <view class="css-icon-pin" style="background: {{item.isPinned ? '' : 'var(--ink-faint)'}}"></view>
+            </view>
+            <view class="gm-del" data-id="{{item.id}}" catchtap="onDeleteGroup">···</view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="gm-empty" wx:if="{{mineGroups.length === 0}}">
+          <text>暂无分组，AI 会在记录时自动创建</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 职业名片（V2 实验，showLab 控制）============ -->
+    <view class="section" wx:if="{{showLab}}">
+      <view class="loan-entry-row card-entry-row" bindtap="onOpenCard">
+        <view class="loan-entry-left">
+          <view class="css-icon-card loan-entry-icon card-entry-icon"></view>
+          <view class="loan-entry-info">
+            <text class="loan-entry-title card-entry-title">职业名片</text>
+            <text class="loan-entry-sub">个人数据画像 · 可分享</text>
+          </view>
+        </view>
+        <text class="loan-entry-arrow">▸</text>
+      </view>
+    </view>
+
+    <!-- ============ 借支管理（V2 实验，showLab 控制）============ -->
+    <view class="section" wx:if="{{showLab}}">
+      <view class="loan-entry-row" bindtap="onOpenLoans">
+        <view class="loan-entry-left">
+          <view class="css-icon-loan loan-entry-icon"></view>
+          <view class="loan-entry-info">
+            <text class="loan-entry-title">借支管理</text>
+            <text class="loan-entry-sub" wx:if="{{loanSummary}}">{{loanSummary}}</text>
+          </view>
+        </view>
+        <text class="loan-entry-arrow">▸</text>
+      </view>
+    </view>
+
+    <!-- ============ 记录热力图 ============ -->
+    <view class="section" wx:if="{{calendarData.length > 0}}">
+      <text class="section-title">记录热力图 · 近3个月</text>
+      <view class="heatmap-wrap">
+        <view class="heatmap-months">
+          <text class="heat-month" wx:for="{{calendarMonths}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view class="heatmap-grid">
+          <view class="heatmap-weekdays">
+            <text class="heat-wd">一</text>
+            <text class="heat-wd">三</text>
+            <text class="heat-wd">五</text>
+            <text class="heat-wd">日</text>
+          </view>
+          <view class="heatmap-cells">
+            <view
+              class="heat-cell heat-cell-{{item.level}}"
+              wx:for="{{calendarData}}"
+              wx:key="date"
+            ></view>
+          </view>
+        </view>
+        <view class="heatmap-legend">
+          <text class="heat-legend-label">少</text>
+          <view class="heat-cell heat-cell-0"></view>
+          <view class="heat-cell heat-cell-1"></view>
+          <view class="heat-cell heat-cell-2"></view>
+          <view class="heat-cell heat-cell-3"></view>
+          <view class="heat-cell heat-cell-4"></view>
+          <text class="heat-legend-label">多</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 状态分布 ============ -->
+    <view class="section" wx:if="{{statusBars.length > 0}}">
+      <text class="section-title">状态分布</text>
+      <view class="status-bars">
+        <view class="bar-row" wx:for="{{statusBars}}" wx:key="status">
+          <text class="bar-label">{{item.label || item.status || '无状态'}}</text>
+          <view class="bar-track">
+            <view class="bar-fill bar-{{item._barClass}}" style="width: {{item.percent}}%"></view>
+          </view>
+          <text class="bar-pct">{{item.percent}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 心情河流（v5 新增）============ -->
+    <view class="section" wx:if="{{moodRiverData.length > 0}}">
+      <text class="section-title">心情河流 · 近7天</text>
+      <view class="mood-river-wrap">
+        <view class="mood-river-track">
+          <view
+            class="mood-day"
+            wx:for="{{moodRiverData}}"
+            wx:key="date"
+          >
+            <view class="mood-day-dot mood-tone-{{item.moodToneClass}}"></view>
+            <text class="mood-day-date">{{item.date.slice(5)}}</text>
+            <text class="mood-day-label">{{item.moodLabel || '—'}}</text>
+            <text class="mood-day-count">{{item.count}}条</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 心情河流空态 -->
+    <view class="section" wx:if="{{moodRiverData.length === 0 && !loading}}">
+      <text class="section-title">心情河流 · 近7天</text>
+      <view class="mood-river-empty">
+        <text>记录更多内容后，AI 会为你画出心情趋势</text>
+      </view>
+    </view>
+
+    <!-- ============ 标签云 ============ -->
+    <view class="section" wx:if="{{tagCloud.length > 0}}">
+      <text class="section-title">常记录的主题</text>
+      <view class="tag-cloud">
+        <text
+          class="cloud-tag"
+          wx:for="{{tagCloud}}"
+          wx:key="tag"
+          style="font-size: {{item.size}}rpx; color: {{item.color}}"
+          data-tag="{{item.tag}}"
+          bindlongpress="onTagLongPress"
+        >{{item.tag}}</text>
+      </view>
+    </view>
+
+    <!-- ============ 最常联系 ============ -->
+    <view class="section" wx:if="{{topPeople.length > 0}}">
+      <text class="section-title">最常联系</text>
+      <view class="people-row">
+        <text class="person-item" wx:for="{{topPeople}}" wx:key="name">{{item.name}}({{item.count}})</text>
+      </view>
+    </view>
+
+    <!-- ============ AI 周报 ============ -->
+    <view class="section">
+      <text class="section-title">AI 周报</text>
+      <view class="summary-card">
+        <!-- 未生成 -->
+        <view class="summary-empty" wx:if="{{!summaryText && !summaryLoading}}">
+          <view class="css-icon-spark se-spark"></view>
+          <text class="se-desc">让 AI 帮你回顾这周的工作</text>
+          <view class="se-btn" bindtap="onGenerateSummary">
+            <text>生成周报</text>
+          </view>
+        </view>
+        <!-- 加载中 -->
+        <view class="summary-loading" wx:if="{{summaryLoading}}">
+          <view class="loader-eq">
+      <view class="loader-eq__bar" style="height:26rpx;animation-delay:0s"></view>
+      <view class="loader-eq__bar" style="height:44rpx;animation-delay:.1s"></view>
+      <view class="loader-eq__bar" style="height:64rpx;animation-delay:.2s"></view>
+      <view class="loader-eq__bar" style="height:36rpx;animation-delay:.3s"></view>
+      <view class="loader-eq__bar" style="height:54rpx;animation-delay:.4s"></view>
+      <view class="loader-eq__bar" style="height:30rpx;animation-delay:.5s"></view>
+      <view class="loader-eq__bar" style="height:48rpx;animation-delay:.6s"></view>
+    </view>
+          <text class="sl-text">AI 正在回顾你的这周...</text>
+        </view>
+        <!-- 结果 -->
+        <view class="summary-result" wx:if="{{summaryText && !summaryLoading}}">
+          <text class="sr-text">{{summaryText}}</text>
+          <view class="sr-actions">
+            <text class="sra-btn" bindtap="onGenerateSummary">重新生成</text>
+            <text class="sra-period">{{summaryPeriod}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 隐私与安全 ============ -->
+    <view class="section">
+      <text class="section-title">隐私与安全</text>
+      <view class="privacy-card">
+        <!-- 应用锁开关 -->
+        <view class="privacy-row">
+          <view class="privacy-info">
+            <text class="privacy-label">应用锁</text>
+            <text class="privacy-desc">退后台超过设定时间后自动锁定</text>
+          </view>
+          <switch
+            checked="{{lockEnabled}}"
+            bindchange="onToggleLock"
+            color="#E8815C"
+          />
+        </view>
+        <!-- 锁定延时 -->
+        <view class="privacy-row" wx:if="{{lockEnabled}}" bindtap="onChangeLockDelay">
+          <view class="privacy-info">
+            <text class="privacy-label">锁定延时</text>
+            <text class="privacy-desc">{{lockDelayLabel}}</text>
+          </view>
+          <text class="privacy-arrow">▸</text>
+        </view>
+        <!-- 修改密码 -->
+        <view class="privacy-row" wx:if="{{lockEnabled}}" bindtap="onChangePin">
+          <view class="privacy-info">
+            <text class="privacy-label">修改密码</text>
+            <text class="privacy-desc">修改6位数字密码</text>
+          </view>
+          <text class="privacy-arrow">▸</text>
+        </view>
+        <!-- 主题切换 -->
+        <view class="privacy-row" bindtap="onChangeTheme">
+          <view class="privacy-info">
+            <text class="privacy-label">外观主题</text>
+            <text class="privacy-desc">{{theme === 'dark' ? '深色模式' : theme === 'light' ? '浅色模式' : '跟随系统'}}</text>
+          </view>
+          <text class="privacy-arrow">▸</text>
+        </view>
+        <!-- 隐私协议 -->
+        <view class="privacy-row" bindtap="onOpenPrivacy">
+          <view class="privacy-info">
+            <text class="privacy-label">隐私协议</text>
+            <text class="privacy-desc">我们如何收集与使用你的数据</text>
+          </view>
+          <text class="privacy-arrow">▸</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 底部设置 ============ -->
+    <view class="settings">
+      <view class="setting-item" bindtap="onExport">
+        <text class="setting-label">数据导出</text>
+        <text class="setting-hint">CSV / Markdown</text>
+      </view>
+      <view class="setting-item" bindtap="onClearAllData">
+        <text class="setting-label" style="color: var(--danger)">清除全部数据</text>
+        <text class="setting-hint">{{stats.total || 0}} 条记录</text>
+      </view>
+      <view class="setting-item" bindtap="onShowAbout">
+        <text class="setting-label">关于活记</text>
+        <text class="setting-hint">v0.5 · AI工作日记</text>
+      </view>
+    </view>
+  </block>
+</view>

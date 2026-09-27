@@ -1,0 +1,139 @@
+/* ============================================
+   活记 · 职业名片
+   ============================================ */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding-bottom: 80rpx;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: var(--ink-faint);
+}
+
+/* Empty */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 200rpx 64rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  color: var(--ink-faint);
+  margin-bottom: 12rpx;
+}
+
+.empty-sub {
+  font-size: 26rpx;
+  color: #C0BDB8;
+}
+
+/* Canvas preview */
+.card-preview-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 32rpx;
+}
+
+.card-canvas {
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0,0,0,0.08);
+  max-width: 100%;
+}
+
+/* Actions */
+.card-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 0 48rpx;
+  margin-bottom: 40rpx;
+}
+
+.card-btn {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.card-btn:active {
+  transform: scale(0.97);
+}
+
+.card-share {
+  background: var(--accent);
+  color: #fff;
+}
+
+.card-save {
+  background: #F2F1EE;
+  color: var(--ink);
+}
+
+.card-refresh {
+  background: #F2F1EE;
+  color: var(--ink-faint);
+  flex: 0 0 auto;
+  padding-left: 36rpx;
+  padding-right: 36rpx;
+}
+
+/* Toggles */
+.card-toggles {
+  padding: 0 48rpx;
+}
+
+.toggles-title {
+  font-size: 26rpx;
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.toggle-item {
+  padding: 16rpx 28rpx;
+  border-radius: 32rpx;
+  background: #F2F1EE;
+  font-size: 26rpx;
+  color: var(--ink-faint);
+  transition: all 0.2s;
+}
+
+.toggle-item:active {
+  opacity: 0.8;
+}
+
+.toggle-item.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+  border: 2rpx solid var(--accent-ring);
+}
+
+/* Dark theme */
+.theme-dark { --bg: #1A1A1C; --card: #252528; --ink: #E8E6E3; --ink-faint: #8C8A85; }
+.theme-dark .card-share { color: #fff; }
+.theme-dark .card-save,
+.theme-dark .card-refresh,
+.theme-dark .toggle-item { background: #333336; color: #C8C6C3; }
+.theme-dark .toggle-item.active { background: rgba(232,129,92,0.15); color: var(--accent); }

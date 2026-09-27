@@ -1,0 +1,66 @@
+<!--
+活记 · 涂鸦画板
+Canvas 2D 自由绘制 → 导出图片 → 发送到首页缩略图预览
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <!-- Canvas -->
+  <canvas
+    type="2d"
+    id="doodleCanvas"
+    class="doodle-canvas"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+  ></canvas>
+
+  <!-- 底部工具栏 -->
+  <view class="toolbar">
+    <!-- 颜色选择 -->
+    <view class="tool-section">
+      <view
+        class="color-chip {{currentColor === item ? 'active' : ''}}"
+        wx:for="{{colors}}"
+        wx:key="*this"
+        style="background: {{item}}"
+        data-color="{{item}}"
+        bindtap="onPickColor"
+      ></view>
+    </view>
+
+    <!-- 粗细选择 -->
+    <view class="tool-section">
+      <view
+        class="size-chip {{currentSize === item.value ? 'active' : ''}}"
+        wx:for="{{sizes}}"
+        wx:key="value"
+        data-size="{{item.value}}"
+        bindtap="onPickSize"
+      >
+        <view class="size-dot" style="width: {{item.dot}}rpx; height: {{item.dot}}rpx"></view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="tool-section tool-actions">
+      <view class="tool-btn {{eraserMode ? 'active' : ''}}" bindtap="onToggleEraser">
+        <text>橡皮</text>
+      </view>
+      <view class="tool-btn" bindtap="onUndo">
+        <text>撤销</text>
+      </view>
+      <view class="tool-btn" bindtap="onClearCanvas">
+        <text>清空</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部完成按钮 -->
+  <view class="done-bar">
+    <view class="done-cancel" bindtap="onCancel">
+      <text>取消</text>
+    </view>
+    <view class="done-submit" bindtap="onDone">
+      <text>完成</text>
+    </view>
+  </view>
+</view>

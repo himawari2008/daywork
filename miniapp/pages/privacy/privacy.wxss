@@ -1,0 +1,57 @@
+/* 活记 · 隐私协议 */
+.page {
+  min-height: 100vh;
+  background: #FBFAF8;
+  padding: 0 40rpx calc(env(safe-area-inset-bottom) + 60rpx);
+  box-sizing: border-box;
+}
+.pv-header {
+  padding: 48rpx 0 24rpx;
+  border-bottom: 1rpx solid var(--divider);
+}
+.pv-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+}
+.pv-update {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  margin-top: 8rpx;
+  display: block;
+}
+.pv-body {
+  padding-top: 32rpx;
+}
+.pv-lead {
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 32rpx;
+}
+.pv-sec {
+  margin-bottom: 36rpx;
+}
+.pv-sec-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 14rpx;
+}
+.pv-p {
+  font-size: 27rpx;
+  line-height: 1.7;
+  color: var(--ink-light, #6B6660);
+  display: block;
+  margin-bottom: 10rpx;
+}
+.pv-foot {
+  font-size: 24rpx;
+  color: var(--ink-faint);
+  line-height: 1.6;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--divider);
+}

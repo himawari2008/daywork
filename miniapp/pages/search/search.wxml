@@ -1,0 +1,115 @@
+<!--
+活记 v3 · 搜索页
+呼吸感 · CSS纯图标 · 零 emoji
+-->
+<view class="page {{isDarkTheme ? 'theme-dark' : ''}}">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <view class="css-icon-search"></view>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索记录、标签、人物..."
+        focus="{{_focusInput}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+      />
+      <view class="search-clear" wx:if="{{keyword}}" bindtap="onClearSearch">
+        <view class="clear-x"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选栏 -->
+  <view class="filters" wx:if="{{availableTags.length > 0 || availableStatuses.length > 0 || groups.length > 0}}">
+    <!-- 分组筛选 -->
+    <scroll-view class="filter-row" scroll-x wx:if="{{groups.length > 0}}">
+      <text class="filter-label">分组</text>
+      <text
+        class="filter-chip {{filterGroupId === 'all' ? 'active' : ''}}"
+        data-group="all"
+        bindtap="onFilterGroup"
+      >全部</text>
+      <text
+        class="filter-chip {{filterGroupId === item.id ? 'active' : ''}}"
+        wx:for="{{groups}}"
+        wx:key="id"
+        data-group="{{item.id}}"
+        bindtap="onFilterGroup"
+      >{{item.name}}</text>
+    </scroll-view>
+
+    <!-- 状态筛选 -->
+    <scroll-view class="filter-row" scroll-x>
+      <text class="filter-label">状态</text>
+      <text
+        class="filter-chip {{filterStatus === '待办' ? 'active' : ''}}"
+        data-status="待办"
+        bindtap="onFilterStatus"
+      >待办</text>
+      <text
+        class="filter-chip {{filterStatus === '已完成' ? 'active' : ''}}"
+        data-status="已完成"
+        bindtap="onFilterStatus"
+      >已完成</text>
+      <text
+        class="filter-chip {{filterStatus === '待跟进' ? 'active' : ''}}"
+        data-status="待跟进"
+        bindtap="onFilterStatus"
+      >待跟进</text>
+    </scroll-view>
+
+    <!-- 标签筛选 -->
+    <scroll-view class="filter-row" scroll-x wx:if="{{availableTags.length > 0}}">
+      <text class="filter-label">标签</text>
+      <text
+        class="filter-chip {{filterTag === item ? 'active' : ''}}"
+        wx:for="{{availableTags}}"
+        wx:key="*this"
+        data-tag="{{item}}"
+        bindtap="onFilterTag"
+      >{{item}}</text>
+    </scroll-view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-dot"></view>
+    <text class="loading-text">搜索中...</text>
+  </view>
+
+  <!-- 结果列表 -->
+  <view class="results" wx:if="{{!loading && searched}}">
+    <!-- 空结果 -->
+    <view class="empty" wx:if="{{results.length === 0}}">
+      <view class="css-icon-search empty-search-icon"></view>
+      <text class="empty-text">没有找到相关记录</text>
+      <text class="empty-hint">试试其他关键词或筛选条件</text>
+    </view>
+
+    <!-- 结果项 -->
+    <view class="result-card" wx:for="{{results}}" wx:key="id" data-id="{{item.id}}" bindtap="onTapRecord">
+      <view class="rc-top">
+        <text class="rc-time">{{item._timeLabel}}</text>
+        <text class="rc-status rc-status-{{item.status === '待办' ? 'pending' : item.status === '已完成' ? 'done' : 'followup'}}" wx:if="{{item.status}}">{{item.status}}</text>
+      </view>
+      <view class="rc-summary">
+        <text
+          class="rc-highlight {{seg.highlight ? 'hl' : ''}}"
+          wx:for="{{item._highlightSummary}}"
+          wx:for-item="seg"
+          wx:key="index"
+        >{{seg.text}}</text>
+      </view>
+      <view class="rc-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+        <text class="rc-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+      </view>
+    </view>
+
+    <!-- 结果计数 -->
+    <view class="result-count" wx:if="{{results.length > 0}}">
+      <text class="rc-text">共 {{results.length}} 条结果</text>
+    </view>
+  </view>
+</view>
