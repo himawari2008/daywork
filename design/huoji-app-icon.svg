@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" width="144" height="144" role="img" aria-label="活记 app icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF8A4C"/>
+      <stop offset="1" stop-color="#E8815C"/>
+    </linearGradient>
+  </defs>
+  <!-- app tile -->
+  <rect x="0" y="0" width="144" height="144" rx="30" fill="url(#bg)"/>
+  <!-- top sheen -->
+  <rect x="0" y="0" width="144" height="58" rx="30" fill="#ffffff" opacity="0.07"/>
+  <!-- white journal card -->
+  <rect x="34" y="32" width="76" height="80" rx="12" fill="#ffffff"/>
+  <!-- binding holes -->
+  <circle cx="46" cy="46" r="2.6" fill="#E8815C"/>
+  <circle cx="46" cy="62" r="2.6" fill="#E8815C"/>
+  <circle cx="46" cy="78" r="2.6" fill="#E8815C"/>
+  <circle cx="46" cy="94" r="2.6" fill="#E8815C"/>
+  <!-- voice waveform (voice journal + AI) -->
+  <rect x="58" y="60" width="7" height="22" rx="3.5" fill="#E8815C"/>
+  <rect x="70" y="48" width="7" height="46" rx="3.5" fill="#E8815C"/>
+  <rect x="82" y="56" width="7" height="30" rx="3.5" fill="#E8815C"/>
+  <rect x="94" y="52" width="7" height="38" rx="3.5" fill="#E8815C"/>
+  <!-- AI spark -->
+  <path d="M108 38 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z" fill="#ffffff"/>
+</svg>

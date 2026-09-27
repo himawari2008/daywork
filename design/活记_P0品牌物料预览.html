@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活记 · P0 品牌物料预览</title>
+<style>
+  :root{
+    --orange:#E8815C;
+    --orange-light:#FF8A4C;
+    --orange-deep:#D07050;   /* AA-safe text-on-orange */
+    --ink:#1F2937;
+    --ink-soft:#6B7280;
+    --bg:#F4F5F7;
+    --card:#FFFFFF;
+    --line:#E5E7EB;
+    --radius:16px;
+    --shadow:0 10px 30px rgba(17,24,39,.08);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 20px 80px}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:46px}
+  header.top .brand{display:flex;align-items:center;gap:14px}
+  header.top .tag{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:linear-gradient(180deg,var(--orange-light),var(--orange))}
+  header.top h1{font-size:24px;margin:0;letter-spacing:.5px}
+  header.top p{margin:6px 0 0;color:var(--ink-soft);font-size:14px}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.06)}
+
+  section{margin-bottom:64px}
+  h2{font-size:19px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .idx{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-size:13px;font-weight:700}
+  .sub{color:var(--ink-soft);font-size:14px;margin:0 0 24px}
+
+  /* ---- icon showcase ---- */
+  .icon-grid{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end}
+  .icon-cell{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .icon-cell span{font-size:12px;color:var(--ink-soft)}
+  .icon-light,.icon-dark{width:170px;height:120px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+  .icon-light{background:#fff;border:1px solid var(--line)}
+  .icon-dark{background:#0F172A}
+  .spec{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;font-size:13.5px;box-shadow:var(--shadow)}
+  .spec b{color:var(--orange-deep)}
+
+  /* ---- phone frames ---- */
+  .phones{display:flex;flex-wrap:wrap;gap:30px;justify-content:center}
+  .phone{width:300px;height:640px;background:#fff;border-radius:46px;border:10px solid #0F172A;position:relative;overflow:hidden;box-shadow:0 24px 50px rgba(15,23,42,.22);flex:0 0 auto}
+  .phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#0F172A;border-radius:0 0 16px 16px;z-index:5}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column}
+
+  /* splash */
+  .splash{background:linear-gradient(170deg,var(--orange-light),var(--orange) 70%);align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 32px}
+  .splash .mark{width:96px;height:96px;margin-bottom:26px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18))}
+  .splash .word{font-size:34px;font-weight:800;letter-spacing:6px}
+  .splash .tag{margin-top:14px;font-size:14px;opacity:.92;letter-spacing:1px}
+  .splash .copy{position:absolute;bottom:40px;font-size:11px;opacity:.7;letter-spacing:1px}
+
+  /* onboarding */
+  .ob{background:#fff}
+  .ob .illus{flex:1;display:flex;align-items:center;justify-content:center;padding:46px 30px 10px}
+  .ob .illus svg{width:200px;height:200px}
+  .ob .copy{padding:18px 30px 30px;text-align:center}
+  .ob .copy .kicker{display:inline-block;font-size:12px;color:var(--orange-deep);font-weight:700;letter-spacing:2px;margin-bottom:8px}
+  .ob .copy h3{margin:0 0 10px;font-size:21px;color:var(--ink)}
+  .ob .copy p{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.7}
+  .ob .dots{display:flex;gap:7px;justify-content:center;padding:0 0 26px}
+  .ob .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
+  .ob .dots i.on{background:var(--orange);width:22px;border-radius:5px}
+
+  .note{background:#FFF7F2;border:1px solid #FFD9C2;border-radius:var(--radius);padding:16px 18px;font-size:13px;color:#8A3B16;margin-top:24px}
+  .note b{color:var(--orange-deep)}
+  footer{color:var(--ink-soft);font-size:12.5px;text-align:center;border-top:1px solid var(--line);padding-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <span class="tag">
+        <svg width="22" height="22" viewBox="0 0 144 144"><rect width="144" height="144" rx="30" fill="#fff" opacity="0"/><rect x="20" y="20" width="104" height="104" rx="22" fill="#fff"/><rect x="40" y="40" width="8" height="64" rx="4" fill="#E8815C"/><rect x="56" y="52" width="8" height="40" rx="4" fill="#E8815C"/><rect x="72" y="44" width="8" height="56" rx="4" fill="#E8815C"/><rect x="88" y="58" width="8" height="28" rx="4" fill="#E8815C"/></svg>
+      </span>
+      <div>
+        <h1>活记 · P0 品牌物料预览</h1>
+        <p>为家航 © 2026　|　主色 <span class="swatch" style="background:#E8815C"></span>#E8815C 航橙　|　交付：小程序图标 / 启动页 / 首次引导页×3</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 1. 小程序图标 ============ -->
+  <section>
+    <h2><span class="idx">1</span>小程序图标 144px</h2>
+    <p class="sub">圆角 30 / 安全区满铺 / 白色「日记卡 + 声波 + AI 火花」符号，无文字依赖，小尺寸仍清晰。</p>
+
+    <div class="icon-grid">
+      <div class="icon-cell">
+        <svg width="144" height="144" viewBox="0 0 144 144"><use href="#icon"/></svg>
+        <span>144px</span>
+      </div>
+      <div class="icon-cell">
+        <svg width="96" height="96" viewBox="0 0 144 144"><use href="#icon"/></svg>
+        <span>96px</span>
+      </div>
+      <div class="icon-cell">
+        <svg width="64" height="64" viewBox="0 0 144 144"><use href="#icon"/></svg>
+        <span>64px</span>
+      </div>
+      <div class="icon-cell">
+        <svg width="48" height="48" viewBox="0 0 144 144"><use href="#icon"/></svg>
+        <span>48px</span>
+      </div>
+      <div class="icon-cell">
+        <div class="icon-light"><svg width="80" height="80" viewBox="0 0 144 144"><use href="#icon"/></svg></div>
+        <span>浅底</span>
+      </div>
+      <div class="icon-cell">
+        <div class="icon-dark"><svg width="80" height="80" viewBox="0 0 144 144"><use href="#icon"/></svg></div>
+        <span>深底</span>
+      </div>
+    </div>
+
+    <div class="spec">
+      <b>交付规格：</b> 尺寸 144×144（建议同步导出 @2x 288 / @3x 432 的 PNG）· 圆角 30（≈20.8%）· 格式 SVG 源文件（已附 <code>huoji-app-icon.svg</code>）+ 开发者导出 PNG · 符号区控制在 34–110 的安全边距内，避免平台圆角裁切。
+    </div>
+  </section>
+
+  <!-- ============ 2. 启动页 ============ -->
+  <section>
+    <h2><span class="idx">2</span>启动页（品牌展示）</h2>
+    <p class="sub">进入即建立品牌认知：航橙渐变铺满，居中图标 + 产品名 + 一句定位，底部版权。</p>
+    <div class="phones">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen splash">
+          <svg class="mark" viewBox="0 0 144 144"><use href="#icon"/></svg>
+          <div class="word">活记</div>
+          <div class="tag">个人 AI 语音工作日记</div>
+          <div class="copy">为家航 © 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. 首次引导页 ============ -->
+  <section>
+    <h2><span class="idx">3</span>首次引导页 ×3</h2>
+    <p class="sub">新用户首启三屏，讲清「记 → 理 → 看」的价值闭环。每屏：插画 + 小标 + 标题 + 说明 + 进度点。</p>
+    <div class="phones">
+
+      <!-- 屏1 -->
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen ob">
+          <div class="illus">
+            <svg viewBox="0 0 200 200" fill="none">
+              <circle cx="100" cy="100" r="64" fill="#FFF1E8"/>
+              <rect x="84" y="58" width="32" height="74" rx="16" fill="var(--orange)"/>
+              <rect x="78" y="120" width="44" height="14" rx="7" fill="var(--orange)"/>
+              <circle cx="100" cy="92" r="9" fill="#fff"/>
+              <g stroke="var(--orange-deep)" stroke-width="5" stroke-linecap="round">
+                <path d="M40 100 H58"/><path d="M142 100 H160"/>
+                <path d="M48 78 H60"/><path d="M140 78 H152"/>
+                <path d="M48 122 H60"/><path d="M140 122 H152"/>
+              </g>
+              <path d="M150 56 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="var(--orange)"/>
+            </svg>
+          </div>
+          <div class="copy">
+            <span class="kicker">RECORD</span>
+            <h3>用声音，记下每一天</h3>
+            <p>走路、开车、干活时，一句话就能记。无需停下手里的活。</p>
+          </div>
+          <div class="dots"><i class="on"></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <!-- 屏2 -->
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen ob">
+          <div class="illus">
+            <svg viewBox="0 0 200 200" fill="none">
+              <rect x="46" y="48" width="78" height="56" rx="12" fill="#FFF1E8" stroke="var(--orange)" stroke-width="3"/>
+              <rect x="70" y="74" width="78" height="56" rx="12" fill="#fff" stroke="var(--orange)" stroke-width="3"/>
+              <rect x="92" y="100" width="78" height="56" rx="12" fill="var(--orange)"/>
+              <circle cx="128" cy="128" r="16" fill="#fff"/>
+              <path d="M122 128 l4 9 10 4 -10 4 -4 9 -4 -9 -10 -4 10 -4 z" fill="var(--orange)"/>
+            </svg>
+          </div>
+          <div class="copy">
+            <span class="kicker">ORGANIZE</span>
+            <h3>AI 替你整理</h3>
+            <p>自动分类、提炼重点、生成周报，告别手抄与翻找。</p>
+          </div>
+          <div class="dots"><i></i><i class="on"></i><i></i></div>
+        </div>
+      </div>
+
+      <!-- 屏3 -->
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen ob">
+          <div class="illus">
+            <svg viewBox="0 0 200 200" fill="none">
+              <path d="M30 130 C70 100 90 150 130 120 S180 110 178 96 L178 160 22 160 Z" fill="#FFF1E8"/>
+              <path d="M30 138 C70 112 92 156 132 128 S180 120 178 108" stroke="var(--orange)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M30 120 C70 92 92 138 132 110 S180 102 178 90" stroke="var(--orange-deep)" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+              <circle cx="150" cy="64" r="14" fill="var(--orange)"/>
+              <path d="M144 64 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="copy">
+            <span class="kicker">REVIEW</span>
+            <h3>时间河流，一目了然</h3>
+            <p>每天的工作沉淀成河床地形，随时回看与复盘。</p>
+          </div>
+          <div class="dots"><i></i><i></i><i class="on"></i></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="note">
+      <b>无障碍 & 对比度提示：</b> 纯白文字直接压在 #E8815C 上的对比度约 <b>2.84:1</b>，未达 WCAG AA（正文 4.5:1 / 大字 3:1）。
+      本方案的处理：① 图标与插画使用图形符号，不依赖文字；② 引导页正文用深墨 #1F2937（AA 达标）；③ 橙色强调仅用于「小标/kicker」等装饰大字，并改用更深的 <b>#D07050</b> 提升可读性。
+      若坚持启动页白字，建议把底色加深为 #D07050 或加 12% 暗化蒙版以满足 3:1。
+    </div>
+  </section>
+
+  <footer>活记 UI 设计交付 · P0 三件套 · 依据《为家航_品牌视觉规范》品牌令牌 · 生成于 2026-07-18</footer>
+</div>
+
+<!-- 图标符号定义（供 <use> 复用） -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="icon">
+      <rect x="0" y="0" width="144" height="144" rx="30" fill="url(#bgGrad)"/>
+      <rect x="0" y="0" width="144" height="58" rx="30" fill="#ffffff" opacity="0.07"/>
+      <rect x="34" y="32" width="76" height="80" rx="12" fill="#ffffff"/>
+      <circle cx="46" cy="46" r="2.6" fill="#E8815C"/>
+      <circle cx="46" cy="62" r="2.6" fill="#E8815C"/>
+      <circle cx="46" cy="78" r="2.6" fill="#E8815C"/>
+      <circle cx="46" cy="94" r="2.6" fill="#E8815C"/>
+      <rect x="58" y="60" width="7" height="22" rx="3.5" fill="#E8815C"/>
+      <rect x="70" y="48" width="7" height="46" rx="3.5" fill="#E8815C"/>
+      <rect x="82" y="56" width="7" height="30" rx="3.5" fill="#E8815C"/>
+      <rect x="94" y="52" width="7" height="38" rx="3.5" fill="#E8815C"/>
+      <path d="M108 38 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z" fill="#ffffff"/>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FF8A4C"/>
+        <stop offset="1" stop-color="#E8815C"/>
+      </linearGradient>
+    </g>
+  </defs>
+</svg>
+
+</body>
+</html>

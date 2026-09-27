@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs>
+    <!-- 记：麦克风（语音记录） -->
+    <symbol id="ic-record" viewBox="0 0 48 48">
+      <rect x="18" y="9" width="12" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="3.2"/>
+      <path d="M13 23a11 11 0 0 0 22 0" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="24" y1="34" x2="24" y2="40" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="17" y1="40" x2="31" y2="40" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    </symbol>
+    <!-- 问：对话气泡（AI问答） -->
+    <symbol id="ic-chat" viewBox="0 0 48 48">
+      <path d="M11 11h26a4 4 0 0 1 4 4v15a4 4 0 0 1-4 4H22l-9 7v-7h-2a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
+      <circle cx="17" cy="24" r="2.4" fill="currentColor"/>
+      <circle cx="24" cy="24" r="2.4" fill="currentColor"/>
+      <circle cx="31" cy="24" r="2.4" fill="currentColor"/>
+    </symbol>
+    <!-- 我的：人物（个人中心） -->
+    <symbol id="ic-mine" viewBox="0 0 48 48">
+      <circle cx="24" cy="17" r="8" fill="none" stroke="currentColor" stroke-width="3.2"/>
+      <path d="M10 41a14 14 0 0 1 28 0" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>

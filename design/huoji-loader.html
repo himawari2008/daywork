@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活记 · 加载动画（声波律动）</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+    background:#FBFAF8;font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif}
+  /* 声波律动：呼应「语音日记」，不使用航小匠/指南针 */
+  .eq{display:flex;align-items:flex-end;gap:10px;height:84px}
+  .eq span{width:12px;background:#E8815C;border-radius:6px;transform-origin:bottom;
+    animation:beat 1s ease-in-out infinite}
+  .eq span:nth-child(1){height:34px;animation-delay:0s}
+  .eq span:nth-child(2){height:58px;animation-delay:.12s}
+  .eq span:nth-child(3){height:84px;animation-delay:.24s}
+  .eq span:nth-child(4){height:50px;animation-delay:.36s}
+  .eq span:nth-child(5){height:70px;animation-delay:.48s}
+  .eq span:nth-child(6){height:40px;animation-delay:.60s}
+  .eq span:nth-child(7){height:62px;animation-delay:.72s}
+  @keyframes beat{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+  .tip{color:#666;font-size:15px}
+  /* 尊重「减少动态效果」系统偏好 */
+  @media (prefers-reduced-motion: reduce){.eq span{animation:none;height:42px}}
+</style>
+</head>
+<body>
+  <div class="eq" aria-label="加载中">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="tip">🎙️ 活记正在聆听…</div>
+
+  <!--
+  ===== 小程序端 WXSS 迁移片段 =====
+  .loader-eq{display:flex;align-items:flex-end;gap:10rpx;height:84rpx}
+  .loader-eq .bar{width:12rpx;height:42rpx;background:#E8815C;border-radius:6rpx;
+    transform-origin:bottom;animation:beat 1s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+  结构：<view class="loader-eq">
+          <view class="bar" style="height:34rpx;animation-delay:0s"></view>
+          <view class="bar" style="height:58rpx;animation-delay:.12s"></view>
+          ... 7 根，height 与 delay 依次递增
+        </view>
+  文案：「活记正在聆听…」可用 <view> 展示，颜色 #666
+  -->
+</body>
+</html>

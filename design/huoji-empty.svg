@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="活记 空状态插画">
+  <!-- 活记空状态：摊开的日记本 + 麦克风 + 声波 + AI火花（无吉祥物角色） -->
+  <!-- 左页 -->
+  <path d="M38 96 Q116 74 118 100 L118 196 Q116 172 38 192 Z" fill="#ffffff" stroke="#E8815C" stroke-width="3.5"/>
+  <!-- 右页 -->
+  <path d="M202 96 Q124 74 122 100 L122 196 Q124 172 202 192 Z" fill="#ffffff" stroke="#E8815C" stroke-width="3.5"/>
+  <!-- 书页横线 -->
+  <g stroke="#FFD9C7" stroke-width="3" stroke-linecap="round">
+    <line x1="56" y1="120" x2="104" y2="116"/>
+    <line x1="56" y1="140" x2="104" y2="136"/>
+    <line x1="56" y1="160" x2="96" y2="157"/>
+    <line x1="136" y1="116" x2="184" y2="120"/>
+    <line x1="136" y1="136" x2="184" y2="140"/>
+    <line x1="144" y1="157" x2="184" y2="160"/>
+  </g>
+  <!-- 麦克风（立在书脊上） -->
+  <rect x="112" y="44" width="16" height="40" rx="8" fill="#E8815C"/>
+  <path d="M104 84 a16 16 0 0 0 32 0" fill="none" stroke="#E8815C" stroke-width="4"/>
+  <line x1="120" y1="100" x2="120" y2="120" stroke="#E8815C" stroke-width="4" stroke-linecap="round"/>
+  <line x1="108" y1="120" x2="132" y2="120" stroke="#E8815C" stroke-width="4" stroke-linecap="round"/>
+  <!-- 声波 -->
+  <path d="M150 72 q16 22 0 44" fill="none" stroke="#E8815C" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <path d="M166 60 q26 34 0 68" fill="none" stroke="#E8815C" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  <!-- AI 火花 -->
+  <path d="M66 58 l6 15 15 6 -15 6 -6 15 -6 -15 -15 -6 15 -6 z" fill="#E8815C"/>
+</svg>

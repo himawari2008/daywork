@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>活记 · P1 / P2 品牌物料预览（语音日记主题）</title>
+<style>
+  :root{
+    --orange:#E8815C; --orange-deep:#E55A2B; --orange-soft:#FFF0EB;
+    --ink:#1A1A1A; --text-2:#333; --text-3:#666; --text-4:#999;
+    --border:#EEE; --bg:#FBFAF8; --card:#fff; --tab-gray:#B0ADA8; --tab-on:#E8815C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;padding:40px 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{text-align:center;margin-bottom:14px}
+  header h1{font-size:28px;font-weight:800}
+  header p{color:var(--text-3);font-size:15px;margin-top:6px}
+  .banner{margin:18px auto 30px;max-width:880px;background:var(--orange-soft);border:1px solid var(--orange);
+    color:var(--orange-deep);border-radius:12px;padding:12px 18px;font-size:13.5px;text-align:center}
+  .legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+  .chip{font-size:13px;padding:5px 14px;border-radius:100px;background:var(--orange-soft);color:var(--orange-deep);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+  .item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;
+    box-shadow:0 2px 12px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:14px}
+  .item h3{font-size:17px;display:flex;align-items:center;gap:8px}
+  .tag{font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px}
+  .tag.p1{background:#E8F0FF;color:#2D6BE8}
+  .tag.p2{background:#EAF8EE;color:#2D8B4A}
+  .desc{font-size:13px;color:var(--text-3)}
+  .stage{background:#F8F9FA;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:18px;min-height:180px}
+  .avatars{display:flex;gap:18px;align-items:center}
+  .av{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .av img{width:96px;height:96px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .av span{font-size:11px;color:var(--text-4)}
+  .share{width:260px;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  .share img{display:block;width:100%}
+  .empty{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px;text-align:center}
+  .empty img{width:128px;height:128px}
+  .empty .tt{font-size:15px;font-weight:700;color:var(--text-2)}
+  .empty .ss{font-size:12px;color:var(--text-4)}
+  .tabs{display:flex;gap:30px;align-items:flex-end}
+  .tabcol{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .tabbox{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+  .tabbox.n{color:var(--tab-gray);background:#F2F1EF}
+  .tabbox.a{color:var(--tab-on);background:var(--orange-soft)}
+  .tabbox svg{width:34px;height:34px}
+  .tablab{font-size:12px;color:var(--text-3)}
+  .tablab.on{color:var(--tab-on);font-weight:700}
+  /* 声波加载（内联，呼应语音日记） */
+  .loader{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .eq{display:flex;align-items:flex-end;gap:9px;height:80px}
+  .eq span{width:11px;background:var(--orange);border-radius:6px;transform-origin:bottom;animation:beat 1s ease-in-out infinite}
+  .eq span:nth-child(1){height:32px;animation-delay:0s}
+  .eq span:nth-child(2){height:56px;animation-delay:.12s}
+  .eq span:nth-child(3){height:80px;animation-delay:.24s}
+  .eq span:nth-child(4){height:48px;animation-delay:.36s}
+  .eq span:nth-child(5){height:66px;animation-delay:.48s}
+  .eq span:nth-child(6){height:38px;animation-delay:.6s}
+  .eq span:nth-child(7){height:60px;animation-delay:.72s}
+  @keyframes beat{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+  .loadtip{font-size:14px;color:var(--text-3)}
+  .note{margin-top:34px;background:#fff;border:1px dashed var(--orange);border-radius:14px;padding:18px 22px;font-size:13px;color:var(--text-2)}
+  .note b{color:var(--orange-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>活记 · P1 / P2 品牌物料预览</h1>
+    <p>航橙 #E8815C · 日记卡 + 声波 + AI 火花 · 与活记 App 图标/启动页/引导页同源</p>
+  </header>
+  <div class="banner">
+    ⚠️ <b>航小匠 / 指南针</b> 属「为家航」（建材导航）品牌语言，<b>不用于活记</b>；
+    本页仅含<b>活记</b>（语音日记小程序）资产，全部采用日记卡 + 声波 语言，<b>不含航小匠、不含指南针</b>。
+  </div>
+  <div class="legend">
+    <span class="chip">P0 已完成 · 图标/启动页/引导页×3</span>
+    <span class="chip">P1 本页 · 头像/分享卡/空状态插画</span>
+    <span class="chip">P2 本页 · Tab图标/加载动画/推送文案</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- P1 公众号头像 -->
+    <div class="item">
+      <h3><span class="tag p1">P1</span> 公众号头像</h3>
+      <div class="stage"><div class="avatars">
+        <div class="av"><img src="huoji-oa-avatar.svg" alt="圆形头像"><span>圆形裁切</span></div>
+        <div class="av"><img src="huoji-oa-avatar.svg" style="border-radius:18px" alt="方角头像"><span>方角展示</span></div>
+      </div></div>
+      <p class="desc">640×640，居中「白色日记卡 + 声波 + AI火花」构图，与活记 App 图标同源。圆形裁切安全区 r=210 内无关键信息。</p>
+    </div>
+
+    <!-- P1 分享卡片 -->
+    <div class="item">
+      <h3><span class="tag p1">P1</span> 分享卡片默认图</h3>
+      <div class="stage"><div class="share"><img src="huoji-share-card.svg" alt="分享卡片"></div></div>
+      <p class="desc">800×640（5:4，微信分享卡比例）。航橙渐变 + 「活记」+ 口号「用声音，记下每一天」+ 副标题「个人 AI 语音工作日记」。可直接作分享封面。</p>
+    </div>
+
+    <!-- P1 空状态插画 -->
+    <div class="item">
+      <h3><span class="tag p1">P1</span> 空状态插画</h3>
+      <div class="stage"><div class="empty">
+        <img src="huoji-empty.svg" alt="空状态插画">
+        <div class="tt">这里还空空如也</div>
+        <div class="ss">点击下方按钮，用语音记下第一条</div>
+      </div></div>
+      <p class="desc">摊开的日记本 + 麦克风 + 声波 + AI 火花，呼应「语音日记」。透明背景 SVG，可置入任意空状态卡片。无吉祥物角色。</p>
+    </div>
+
+    <!-- P2 底部 Tab 图标 -->
+    <div class="item">
+      <h3><span class="tag p2">P2</span> 底部 Tab 图标</h3>
+      <div class="stage"><div class="tabs">
+        <div class="tabcol"><div class="tabbox n"><svg><use href="huoji-tab-icons.svg#ic-record"/></svg></div><div class="tablab">记</div></div>
+        <div class="tabcol"><div class="tabbox n"><svg><use href="huoji-tab-icons.svg#ic-chat"/></svg></div><div class="tablab">问</div></div>
+        <div class="tabcol"><div class="tabbox n"><svg><use href="huoji-tab-icons.svg#ic-mine"/></svg></div><div class="tablab">我的</div></div>
+        <div class="tabcol"><div class="tabbox a"><svg><use href="huoji-tab-icons.svg#ic-record"/></svg></div><div class="tablab on">记·选中</div></div>
+      </div></div>
+      <p class="desc">线型图标：常态灰 #B0ADA8，选中态航橙 #E8815C + 浅橙底 #FFF0EB。对应 app.json 三 Tab：记/问/我的。需导出 81×81 PNG 接入 tabBar（小程序仅接受位图）。</p>
+    </div>
+
+    <!-- P2 加载动画 -->
+    <div class="item">
+      <h3><span class="tag p2">P2</span> 加载动画</h3>
+      <div class="stage"><div class="loader">
+        <div class="eq"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="loadtip">🎙️ 活记正在聆听…</div>
+      </div></div>
+      <p class="desc">声波律动（equalizer），呼应「语音日记」，<b>不使用指南针/航小匠</b>。含 <code>prefers-reduced-motion</code> 降级；小程序端 WXSS 迁移片段见 huoji-loader.html 注释。</p>
+    </div>
+
+    <!-- P2 推送文案 -->
+    <div class="item">
+      <h3><span class="tag p2">P2</span> 推送文案模板</h3>
+      <div class="stage" style="align-items:stretch"><div style="width:100%;font-size:12.5px;color:var(--text-2);line-height:1.9">
+        <b style="color:var(--orange-deep)">活记第一人称 · 四类场景</b><br>
+        • 每日提醒：今天的第一句话，留给活记吧 🎙️<br>
+        • 整理完成：你的记录整理好了，点开看看 ✅<br>
+        • 节点提醒：明天有个事，要提前准备点啥不？⏰<br>
+        • 引导回流：你的记录还在等你，回来看看 📌
+      </div></div>
+      <p class="desc">《huoji-push-templates.md》含 4 大类完整标题+文案表与 5 条使用规范，发声主体为「活记」，可直接接入订阅消息。</p>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>交付说明：</b> 本页为<b>活记</b> P1/P2 视觉预览。源文件位于 <code>活记UI/</code>：
+    <code>huoji-oa-avatar.svg</code>（头像）、<code>huoji-share-card.svg</code>（分享卡）、
+    <code>huoji-empty.svg</code>（空状态插画）、<code>huoji-tab-icons.svg</code>（Tab 图标 sprite）、
+    <code>huoji-loader.html</code>（声波加载动画+WXSS 片段）、<code>huoji-push-templates.md</code>（推送文案）。
+    <br><b>为家航专属资产</b>（航小匠空状态、航小匠加载动画等）属「为家航」品牌语言，<b>不在活记范围内</b>，本页互不混淆。
+    <br>需栅格化交付的位图（图标 PNG / 头像 JPG / 分享卡 PNG）建议用设计工具按标注尺寸导出；如需我生成 PNG，请告知。
+  </div>
+</div>
+</body>
+</html>
